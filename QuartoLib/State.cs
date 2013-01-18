@@ -16,7 +16,7 @@ namespace QuartoLib
         Small
     };
 
-    class State
+    public class State
     {
         /// <summary>
         /// Game field shows if [i][j]-th

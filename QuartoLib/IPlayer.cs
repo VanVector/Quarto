@@ -7,6 +7,6 @@ namespace QuartoLib
 {
     interface IPlayer
     {
-        State MakeMove();
+        Move MakeMove();
     }
 }

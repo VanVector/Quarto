@@ -1,0 +1,5 @@
+C:\Users\VanVector\Desktop\Quatro\QuartoLib\obj\Debug\ResolveAssemblyReference.cache
+C:\Users\VanVector\Desktop\Quatro\QuartoLib\bin\Debug\QuartoLib.dll
+C:\Users\VanVector\Desktop\Quatro\QuartoLib\bin\Debug\QuartoLib.pdb
+C:\Users\VanVector\Desktop\Quatro\QuartoLib\obj\Debug\QuartoLib.dll
+C:\Users\VanVector\Desktop\Quatro\QuartoLib\obj\Debug\QuartoLib.pdb

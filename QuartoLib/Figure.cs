@@ -7,11 +7,11 @@ namespace QuartoLib
 {
     public class Figure
     {
-        private byte _figure;
-        public byte Figure
+        private byte _code;
+        public byte Code
         {
-            get { return _figure; }
-            set {_figure = value; }
+            get { return _code; }
+            set { _code = value; }
         }
 
         private bool _IsValid(int figure) {
@@ -31,7 +31,7 @@ namespace QuartoLib
         {
             if (!_IsValid(figure))
                 throw new ArgumentException("Figure is invalid.");
-            Figure = figure;
+            Code = figure;
         }
     }
 }
