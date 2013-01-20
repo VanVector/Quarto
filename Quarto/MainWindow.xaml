@@ -2,69 +2,62 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:qc="clr-namespace:Quarto"
-        Title="MainWindow" Height="342" Width="949">
+        Title="Quarto" Height="369" Width="932">
     
-    <Grid Width="919" Height="306">
+    <Grid Width="900" Height="322">
         <Grid.ColumnDefinitions>
             <ColumnDefinition MinWidth="300" Width="300" MaxWidth="300" />
-            <ColumnDefinition />
-            <ColumnDefinition />
+            <ColumnDefinition Width="178*" />
+            <ColumnDefinition Width="122*" />
+            <ColumnDefinition Width="300*" />
         </Grid.ColumnDefinitions>
-        <ContentControl BorderBrush="Black" BorderThickness="1,1,1,1">
-            <Grid Height="300" HorizontalAlignment="Left" Name="grid1" VerticalAlignment="Top" Width="300" MaxWidth="300" MaxHeight="300" MinHeight="300" MinWidth="300" UseLayoutRounding="True" OverridesDefaultStyle="False">
+        
+        <Menu Height="22" HorizontalAlignment="Stretch" Name="MainMenu" VerticalAlignment="Top" Width="900" Grid.ColumnSpan="4">
+            <MenuItem Header="Game">
+                <MenuItem Header="New Game" Click="MenuItem_Click" />
+            </MenuItem>
+            <MenuItem Header="Help">
+                <MenuItem Header="Rules" />
+                <MenuItem Header="About" />
+            </MenuItem>
+        </Menu>
+        <ContentControl BorderBrush="Black" BorderThickness="1,1,1,1" Margin="0,22,0,0">
+            <Grid Height="300" HorizontalAlignment="Left" Name="GameFieldGrid" VerticalAlignment="Top" Width="300" MaxWidth="300" MaxHeight="300" MinHeight="300" MinWidth="300" UseLayoutRounding="True" OverridesDefaultStyle="False">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="16" MaxHeight="75" />
-                    <RowDefinition Height="59" />
+                    <RowDefinition Height="75" MaxHeight="75" MinHeight="75" />
                     <RowDefinition Height="75" MaxHeight="75" MinHeight="75" />
                     <RowDefinition Height="75" MaxHeight="75" MinHeight="75" />
                     <RowDefinition Height="75" MaxHeight="75" MinHeight="75" />
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition MaxWidth="75" Width="4" />
-                    <ColumnDefinition Width="71" />
+                    <ColumnDefinition MaxWidth="75" MinWidth="75" Width="75" />
                     <ColumnDefinition MaxWidth="75" MinWidth="75" Width="75" />
                     <ColumnDefinition MaxWidth="75" MinWidth="75" Width="75" />
                     <ColumnDefinition MaxWidth="75" MinWidth="75" Width="75" />
                 </Grid.ColumnDefinitions>
-                <Border BorderBrush="#FFCCCCCC" BorderThickness="2" CornerRadius="35" Width="73" Height="73" Grid.ColumnSpan="2" Margin="1" Grid.RowSpan="2">
-                    <qc:FigureWrapper x:Name="fw0002" Figure="4" FigurePlacedOrChosen="False"/>
-                </Border>
-                <Border BorderBrush="#FFCCCCCC" BorderThickness="2" Grid.Column="2" CornerRadius="35" Height="73" Width="73" Margin="1" Grid.RowSpan="2">
-                    <qc:FigureWrapper x:Name="fw0200" Figure="4" FigurePlacedOrChosen="False"/>
-                </Border>
-                <Border BorderBrush="#FFCCCCCC" BorderThickness="2" Grid.Column="3" CornerRadius="35" Height="73" Width="73" Margin="1" Grid.RowSpan="2">
-                    <qc:FigureWrapper x:Name="fw20200" Figure="4" FigurePlacedOrChosen="False"/>
-                </Border>
-                <Border BorderBrush="#FFCCCCCC" BorderThickness="2" Grid.Column="4" CornerRadius="35" Height="73" Width="73" Margin="1" Grid.RowSpan="2">
-                    <qc:FigureWrapper x:Name="fw02400" Figure="4" FigurePlacedOrChosen="False"/>
-                </Border>
+                <Border Background="#FFEEEEEE" BorderThickness="2" CornerRadius="35" Width="73" Height="73" Margin="1" Grid.Row="0" Grid.Column="0"></Border>
+                <Border Background="#FFEEEEEE" BorderThickness="2" CornerRadius="35" Height="73" Width="73" Margin="1" Grid.Row="0" Grid.Column="1"></Border>
+                <Border Background="#FFEEEEEE" BorderThickness="2" CornerRadius="35" Height="73" Width="73" Margin="1" Grid.Row="0" Grid.Column="2"></Border>
+                <Border Background="#FFEEEEEE" BorderThickness="2" CornerRadius="35" Height="73" Width="73" Margin="1" Grid.Row="0" Grid.Column="3"></Border>
 
-                <Border BorderBrush="#FFCCCCCC" BorderThickness="2" Grid.Row="2" CornerRadius="35" Height="73" Width="73" Grid.ColumnSpan="2" Margin="1">
-                    <qc:FigureWrapper x:Name="fw020023" Figure="4" FigurePlacedOrChosen="False"/>
-                </Border>
-                <Border BorderBrush="#FFCCCCCC" BorderThickness="2" Grid.Column="2" Grid.Row="2" CornerRadius="35" Height="73" Width="73"></Border>
-                <Border BorderBrush="#FFCCCCCC" BorderThickness="2" Grid.Column="3" Grid.Row="2" CornerRadius="35" Height="73" Width="73"></Border>
-                <Border BorderBrush="#FFCCCCCC" BorderThickness="2" Grid.Column="4" Grid.Row="2" CornerRadius="35" Height="73" Width="73"></Border>
+                <Border Background="#FFEEEEEE" BorderThickness="2" CornerRadius="35" Width="73" Height="73" Margin="1" Grid.Row="1" Grid.Column="0"></Border>
+                <Border Background="#FFEEEEEE" BorderThickness="2" CornerRadius="35" Height="73" Width="73" Margin="1" Grid.Row="1" Grid.Column="1"></Border>
+                <Border Background="#FFEEEEEE" BorderThickness="2" CornerRadius="35" Height="73" Width="73" Margin="1" Grid.Row="1" Grid.Column="2"></Border>
+                <Border Background="#FFEEEEEE" BorderThickness="2" CornerRadius="35" Height="73" Width="73" Margin="1" Grid.Row="1" Grid.Column="3"></Border>
 
-                <Border BorderBrush="#FFCCCCCC" BorderThickness="2" Grid.Row="3" CornerRadius="35" Height="73" Width="73" Grid.ColumnSpan="2" Margin="1"></Border>
-                <Border BorderBrush="#FFCCCCCC" BorderThickness="2" Grid.Column="2" Grid.Row="3" CornerRadius="35" Height="73" Width="73"></Border>
-                <Border BorderBrush="#FFCCCCCC" BorderThickness="2" Grid.Column="3" Grid.Row="3" CornerRadius="35" Height="73" Width="73">
-                    <qc:FigureWrapper x:Name="fw02001" Figure="4" FigurePlacedOrChosen="False"/>
-                </Border>
-                <Border BorderBrush="#FFCCCCCC" BorderThickness="2" Grid.Column="4" Grid.Row="3" CornerRadius="35" Height="73" Width="73"></Border>
+                <Border Background="#FFEEEEEE" BorderThickness="2" CornerRadius="35" Width="73" Height="73" Margin="1" Grid.Row="2" Grid.Column="0"></Border>
+                <Border Background="#FFEEEEEE" BorderThickness="2" CornerRadius="35" Height="73" Width="73" Margin="1" Grid.Row="2" Grid.Column="1"></Border>
+                <Border Background="#FFEEEEEE" BorderThickness="2" CornerRadius="35" Height="73" Width="73" Margin="1" Grid.Row="2" Grid.Column="2"></Border>
+                <Border Background="#FFEEEEEE" BorderThickness="2" CornerRadius="35" Height="73" Width="73" Margin="1" Grid.Row="2" Grid.Column="3"></Border>
 
-                <Border BorderBrush="#FFCCCCCC" BorderThickness="2" Grid.Row="4" CornerRadius="35" Height="73" Width="73" Grid.ColumnSpan="2" Margin="1"></Border>
-                <Border BorderBrush="#FFCCCCCC" BorderThickness="2" Grid.Column="2" Grid.Row="4" CornerRadius="35" Height="73" Width="73"></Border>
-                <Border BorderBrush="#FFCCCCCC" BorderThickness="2" Grid.Column="3" Grid.Row="4" CornerRadius="35" Height="73" Width="73">
-                    <qc:FigureWrapper x:Name="fw02010" Figure="4" FigurePlacedOrChosen="False"/>
-                </Border>
-                <Border BorderBrush="#FFCCCCCC" BorderThickness="2" Grid.Column="4" Grid.Row="4" CornerRadius="35" Height="73" Width="73">
-                    <qc:FigureWrapper x:Name="fw02100" Figure="4" FigurePlacedOrChosen="False"/>
-                </Border>
+                <Border Background="#FFEEEEEE" BorderThickness="2" CornerRadius="35" Width="73" Height="73" Margin="1" Grid.Row="3" Grid.Column="0"></Border>
+                <Border Background="#FFEEEEEE" BorderThickness="2" CornerRadius="35" Height="73" Width="73" Margin="1" Grid.Row="3" Grid.Column="1"></Border>
+                <Border Background="#FFEEEEEE" BorderThickness="2" CornerRadius="35" Height="73" Width="73" Margin="1" Grid.Row="3" Grid.Column="2"></Border>
+                <Border Background="#FFEEEEEE" BorderThickness="2" CornerRadius="35" Height="73" Width="73" Margin="1" Grid.Row="3" Grid.Column="3"></Border>
             </Grid>
         </ContentControl>
 
-        <ContentControl BorderBrush="Black" BorderThickness="1,1,1,1" Grid.Column="2">
+        <ContentControl BorderBrush="Black" BorderThickness="1,1,1,1" Grid.Column="3" Margin="0,22,0,0">
             <Grid Height="300" HorizontalAlignment="Left" Name="FiguresToTakeGrid" VerticalAlignment="Top" Width="300" MaxWidth="300" MaxHeight="300" MinHeight="300" MinWidth="300" UseLayoutRounding="True" OverridesDefaultStyle="False">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="75" MaxHeight="75" MinHeight="75" />
@@ -80,10 +73,11 @@
                 </Grid.ColumnDefinitions>
             </Grid>
         </ContentControl>
-        <Button Content="Quarto!" Grid.Column="1" Height="75" HorizontalAlignment="Left" Margin="47,75,0,0" Name="button1" VerticalAlignment="Top" Width="118" FontFamily="Lao UI" FontSize="16" FontStretch="Normal" />
-        <Border BorderBrush="#FFCCCCCC" BorderThickness="2" CornerRadius="5" Margin="183,75,50,156" Grid.Column="1" Background="#FF8FDBA0" />
-        <Rectangle Grid.Column="1" Height="35" HorizontalAlignment="Left" Margin="183,25,0,0" Name="rectangle1" Stroke="#FFCCCCCC" VerticalAlignment="Top" Width="75" Fill="#FFE85C5C" StrokeThickness="2" RadiusX="5" RadiusY="16" />
-        <Label Content="Active Player:" Grid.Column="1" Height="35" HorizontalAlignment="Left" Margin="47,25,0,0" Name="label1" VerticalAlignment="Top" Width="118" FontFamily="Lao UI" FontSize="16" />
-        <TextBlock Grid.Column="1" Height="56" HorizontalAlignment="Left" Margin="47,225,0,0" Name="textBlock1" Text="Hello!" VerticalAlignment="Top" Width="213" TextAlignment="Center" />
+
+        <Button Content="Quarto!" Grid.Column="1" Height="75" HorizontalAlignment="Left" Margin="47,106,0,0" Name="SayQuartoButton" VerticalAlignment="Top" Width="118" FontFamily="Lao UI" FontSize="16" FontStretch="Normal" Click="SayQuartoButton_Click" />
+        <Border BorderBrush="#FFCCCCCC" BorderThickness="2" CornerRadius="5" Margin="5,106,40,141" Grid.Column="2" Background="#FFCEFFD8" x:Name="FigureToPlaceBorder">
+        </Border>
+        <Rectangle Grid.Column="2" Height="35" HorizontalAlignment="Left" Margin="5,56,0,0" Name="TurnIndicatorRectangle" Stroke="#FFCCCCCC" VerticalAlignment="Top" Width="75" Fill="#FFE85C5C" StrokeThickness="2" RadiusX="5" RadiusY="16" />
+        <Label Content="Active Player:" Grid.Column="1" Height="35" HorizontalAlignment="Left" Margin="47,56,0,0" Name="label1" VerticalAlignment="Top" Width="118" FontFamily="Lao UI" FontSize="16" />
     </Grid>
 </Window>

@@ -46,7 +46,7 @@ namespace Quarto
         }
 
         private void FigurePlacedOrChosen_Changed() {
-            this.Cursor = Cursors.Hand;
+
         }
 
         public FigureWrapper()
@@ -68,18 +68,6 @@ namespace Quarto
             e2.Fill = new SolidColorBrush(((figure & 2) == 0) ? Color.FromArgb(255, 0x44, 0x44, 0x44) : Color.FromArgb(255, 255, 255, 255));
             e3.Fill = new SolidColorBrush(((figure & 4) == 0) ? Color.FromArgb(255, 0x44, 0x44, 0x44) : Color.FromArgb(255, 255, 255, 255));
             e4.Fill = new SolidColorBrush(((figure & 8) == 0) ? Color.FromArgb(255, 0x44, 0x44, 0x44) : Color.FromArgb(255, 255, 255, 255));
-        }
-
-        private void FigureRectangle_MouseEnter(object sender, MouseEventArgs e)
-        {
-            Rectangle rec = (Rectangle)FindName("FigureRectangle");
-            rec.Stroke = new SolidColorBrush(Color.FromRgb(0xCC, 0x55, 0x55));
-        }
-
-        private void FigureRectangle_MouseLeave(object sender, MouseEventArgs e)
-        {
-            Rectangle rec = (Rectangle)FindName("FigureRectangle");
-            rec.Stroke = new SolidColorBrush(Color.FromRgb(0xCC, 0xCC, 0xCC));
         }
     }
 }
