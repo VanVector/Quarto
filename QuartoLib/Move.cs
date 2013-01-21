@@ -17,19 +17,19 @@ namespace QuartoLib
         public Move(byte x, byte y, byte figure)
         {
             XFigurePlacedTo = x;
-            XFigurePlacedTo = y;
+            YFigurePlacedTo = y;
             FigureGivenToOpponent = figure;
         }
         public Move()
         {
             XFigurePlacedTo = 0;
-            XFigurePlacedTo = 0;
+            YFigurePlacedTo = 0;
             FigureGivenToOpponent = 0;
         }
         public Move(byte x, byte y)
         {
             XFigurePlacedTo = x;
-            XFigurePlacedTo = y;
+            YFigurePlacedTo = y;
         }
     }
 }

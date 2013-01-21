@@ -18,6 +18,8 @@ namespace QuartoLib
 
     public class State
     {
+        
+
         /// <summary>
         /// Game field shows if [i][j]-th
         /// position is occupied by a figure GameField[i][j].
@@ -33,7 +35,7 @@ namespace QuartoLib
         /// <summary>
         /// WinableBySign shows if the line can be completed
         /// with the n-th sign, the n-th bit of each WinableBySign[i]
-        /// contains this information
+        /// contains this information.
         /// </summary>
         private byte[] _winableBySign;
         public byte[] WinableBySign
@@ -55,7 +57,7 @@ namespace QuartoLib
         }
 
         /// <summary>
-        /// Defines what figure player has to place
+        /// Defines what figure player has to place.
         /// </summary>
         private byte _figureToPlace;
         public byte FigureToPlace
@@ -65,29 +67,46 @@ namespace QuartoLib
         }
 
         /// <summary>
-        /// number of figures placed
+        /// Number of figures placed.
         /// </summary>
-        public byte _figuresPlaced;
+        private byte _figuresPlaced;
         public byte FiguresPlaced {
             get { return _figuresPlaced; }
             private set { _figuresPlaced = value; } 
         }
 
+        /// <summary>
+        /// Code of the last figure placed.
+        /// </summary>
+        private byte _lastFigurePlaced;
+        public byte LastFigurePlaced
+        {
+            get { return _lastFigurePlaced; }
+            private set { _lastFigurePlaced = value; }
+        }
+
+        /// <summary>
+        /// Game start state constructor.
+        /// </summary>
         public State() { 
             GameField = new byte[4][];
             for (byte i = 0; i < 4; i++)
             {
                 GameField[i] = new byte[4];
                 for (byte j = 0; j < 4; j++)
-                    GameField[i][j] = 16;
+                    GameField[i][j] = Figure.NO_FIGURE;
             }
             Figures = 0;
             WinableBySign = new byte[10];
             for (byte i = 0; i < 10; i++) WinableBySign[i] = 255;
-            FigureToPlace = 0;
+            FigureToPlace = Figure.NO_FIGURE;
             FiguresPlaced = 0;
+            LastFigurePlaced = Figure.NO_FIGURE;
         }
 
+        /// <summary>
+        /// Copy constructor.
+        /// </summary>
         public State(State state)
         {
             GameField = state.GameField;
@@ -95,8 +114,16 @@ namespace QuartoLib
             Figures = state.Figures;
             FigureToPlace = state.FigureToPlace;
             FiguresPlaced = state.FiguresPlaced;
+            LastFigurePlaced = state.LastFigurePlaced;
         }
 
+        /// <summary>
+        /// New game state constructor.
+        /// State is constructed from previous state and
+        /// move that was made.
+        /// </summary>
+        /// <param name="state">Previous state.</param>
+        /// <param name="move">Made move.</param>
         public State(State state, Move move)
             : this(state)
         {
@@ -106,7 +133,7 @@ namespace QuartoLib
 
             if (i < 0 || i > 4 || j < 0 || j > 4)
                 throw new ArgumentException("i,j parameters are incorrect.");
-            if (state.GameField[i][j] != 16)
+            if (state.GameField[i][j] != Figure.NO_FIGURE)
                 throw new ArgumentException(string.Format("GameField[{0}][{1}] is already occupied.", i, j));
 
             GameField[i][j] = state.FigureToPlace;
@@ -124,9 +151,17 @@ namespace QuartoLib
                 throw new ArgumentException("Figure to place is already used.");
             FigureToPlace = figureToPlace;
             FiguresPlaced = (byte)(state.FiguresPlaced + 1);
+            LastFigurePlaced = state.FigureToPlace;
         }
 
-        public State(byte[][] gameField, byte figureToPlace)
+        /// <summary>
+        /// New state created from gameField matrix, figure to place and last figure
+        /// placed.
+        /// </summary>
+        /// <param name="gameField">4x4 gamefield matrix with figure codes.</param>
+        /// <param name="figureToPlace">Code of the figure to place.</param>
+        /// <param name="lastFigurePlaced">Code of the last figure placed.</param>
+        public State(byte[][] gameField, byte figureToPlace, byte lastFigurePlaced)
         {
             if (gameField.Length != 4)
                 throw new ArgumentException("GameField length is incorrect.");
@@ -138,9 +173,9 @@ namespace QuartoLib
                 for (byte j = 0; j < 4; j++)
                 {
                     byte tfigure = gameField[i][j];
-                    if (tfigure > 16)
+                    if (tfigure >= Figure.NO_FIGURE)
                         throw new ArgumentException(string.Format("Incorrect figure on [{0}][{1}]-th place.", i, j));
-                    if (tfigure != 16)
+                    if (tfigure != Figure.NO_FIGURE)
                     {
                         if (((Figures >> tfigure) & 1) == 1)
                             throw new ArgumentException(string.Format("Figure {2} on [{0}][{1}]-th place is already used.", i, j, tfigure));
@@ -156,17 +191,18 @@ namespace QuartoLib
             GameField = gameField;
             for (byte i = 0; i < 10; i++) WinableBySign[i] = 255;
             FillWinableBySign();
+            LastFigurePlaced = lastFigurePlaced;
         }
 
         /// <summary>
-        /// sets WinableBySign array.
+        /// Sets WinableBySign array.
         /// </summary>
         protected void FillWinableBySign() {
            for(byte i = 0; i < 4; i++)
                for (byte j = 0; j < 4; j++)
                {
                    byte figSigns = FigureToSigns(GameField[i][j]);
-                   if (figSigns == 16)
+                   if (figSigns == Figure.NO_FIGURE)
                        continue;
                    WinableBySign[j + 4] &= figSigns;
                    WinableBySign[i] &= figSigns;
@@ -178,7 +214,7 @@ namespace QuartoLib
         }
 
         /// <summary>
-        /// tranforms 4-bit figure representation
+        /// Tranforms 4-bit figure representation
         /// to 8-bit representation, showing whether figure
         /// has the i-th sign, where i is the number of the bit.
         /// </summary>

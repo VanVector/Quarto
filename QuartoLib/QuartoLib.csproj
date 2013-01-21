@@ -40,7 +40,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Action.cs" />
     <Compile Include="Figure.cs" />
+    <Compile Include="GamePlatform.cs" />
     <Compile Include="Move.cs" />
     <Compile Include="Player.cs" />
     <Compile Include="IPlayer.cs" />

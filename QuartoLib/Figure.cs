@@ -7,6 +7,8 @@ namespace QuartoLib
 {
     public class Figure
     {
+        public const byte NO_FIGURE = 16;
+
         private byte _code;
         public byte Code
         {
