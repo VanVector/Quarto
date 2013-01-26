@@ -43,8 +43,9 @@
     <Compile Include="Action.cs" />
     <Compile Include="Figure.cs" />
     <Compile Include="GamePlatform.cs" />
+    <Compile Include="HumanPlayer.cs" />
     <Compile Include="Move.cs" />
-    <Compile Include="Player.cs" />
+    <Compile Include="CpuPlayer.cs" />
     <Compile Include="IPlayer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="State.cs" />

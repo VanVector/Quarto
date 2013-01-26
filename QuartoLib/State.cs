@@ -120,16 +120,15 @@ namespace QuartoLib
         /// <summary>
         /// New game state constructor.
         /// State is constructed from previous state and
-        /// move that was made.
+        /// figure place move that was made.
         /// </summary>
         /// <param name="state">Previous state.</param>
-        /// <param name="move">Made move.</param>
-        public State(State state, Move move)
+        /// <param name="move">Figure place move.</param>
+        public State(State state, FigurePlaceMove move)
             : this(state)
         {
             byte i = move.XFigurePlacedTo;
             byte j = move.YFigurePlacedTo;
-            byte figureToPlace = move.FigureGivenToOpponent;
 
             if (i < 0 || i > 4 || j < 0 || j > 4)
                 throw new ArgumentException("i,j parameters are incorrect.");
@@ -147,13 +146,30 @@ namespace QuartoLib
 
             Figures += (short)(1 << state.FigureToPlace);
 
-            if (((state.Figures >> figureToPlace) & 1) == 1)
-                throw new ArgumentException("Figure to place is already used.");
-            FigureToPlace = figureToPlace;
+            FigureToPlace = Figure.NO_FIGURE;
             FiguresPlaced = (byte)(state.FiguresPlaced + 1);
             LastFigurePlaced = state.FigureToPlace;
         }
 
+        /// <summary>
+        /// New game state constructor.
+        /// State is constructed from previous state and
+        /// figure take move that was made.
+        /// </summary>
+        /// <param name="state">Previous state.</param>
+        /// <param name="move">Figure take move.</param>
+        public State(State state, FigureTakeMove move)
+            : this(state)
+        {
+            byte figureToPlace = move.FigureGivenToOpponent;
+
+            if (((state.Figures >> figureToPlace) & 1) == 1)
+                throw new ArgumentException("Figure to place is already used.");
+
+            FigureToPlace = figureToPlace;
+        }
+
+        /*
         /// <summary>
         /// New state created from gameField matrix, figure to place and last figure
         /// placed.
@@ -193,6 +209,7 @@ namespace QuartoLib
             FillWinableBySign();
             LastFigurePlaced = lastFigurePlaced;
         }
+        */
 
         /// <summary>
         /// Sets WinableBySign array.

@@ -11,7 +11,8 @@ namespace QuartoLib
         TIE_OFFER = 1,
         SURRENDER = 2,
         QUARTO_SAYING = 3,
-        ACCEPT_TIE = 4
+        ACCEPT_TIE = 4,
+        DECLINE_TIE = 5
     };
 
     public class Action
@@ -40,7 +41,6 @@ namespace QuartoLib
         /// </summary>
         public Action() {
             ActionType = ActionType.REGULAR_MOVE;
-            Move = new Move();
         }
 
         /// <summary>
@@ -53,4 +53,5 @@ namespace QuartoLib
             ActionType = actionType;
         }
     }
+
 }
