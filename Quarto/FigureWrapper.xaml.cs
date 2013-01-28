@@ -58,7 +58,7 @@ namespace Quarto
             InitializeComponent();
             FigurePlacedOrChosen = false;
             Figure = figure;
-
+            
             Ellipse e1 = (Ellipse)this.FindName("Ellipse1");
             Ellipse e2 = (Ellipse)this.FindName("Ellipse2");
             Ellipse e3 = (Ellipse)this.FindName("Ellipse3");
@@ -68,6 +68,27 @@ namespace Quarto
             e2.Fill = new SolidColorBrush(((figure & 2) == 0) ? Color.FromArgb(255, 0x44, 0x44, 0x44) : Color.FromArgb(255, 255, 255, 255));
             e3.Fill = new SolidColorBrush(((figure & 4) == 0) ? Color.FromArgb(255, 0x44, 0x44, 0x44) : Color.FromArgb(255, 255, 255, 255));
             e4.Fill = new SolidColorBrush(((figure & 8) == 0) ? Color.FromArgb(255, 0x44, 0x44, 0x44) : Color.FromArgb(255, 255, 255, 255));
+
+            //this.Background = new ImageBrush(); //"/Quarto;component/figures/figure" + figure + ".png"));
+        }
+
+        public void SwitchToPieceView() {
+            Ellipse e1 = (Ellipse)this.FindName("Ellipse1");
+            Ellipse e2 = (Ellipse)this.FindName("Ellipse2");
+            Ellipse e3 = (Ellipse)this.FindName("Ellipse3");
+            Ellipse e4 = (Ellipse)this.FindName("Ellipse4");
+            Rectangle r = (Rectangle)this.FindName("FigureRectangle");
+            e1.Visibility = e2.Visibility = e3.Visibility = e4.Visibility = r.Visibility = System.Windows.Visibility.Hidden;
+        }
+
+        public void SwitchToCodeView()
+        {
+            Ellipse e1 = (Ellipse)this.FindName("Ellipse1");
+            Ellipse e2 = (Ellipse)this.FindName("Ellipse2");
+            Ellipse e3 = (Ellipse)this.FindName("Ellipse3");
+            Ellipse e4 = (Ellipse)this.FindName("Ellipse4");
+            Rectangle r = (Rectangle)this.FindName("FigureRectangle");
+            e1.Visibility = e2.Visibility = e3.Visibility = e4.Visibility = r.Visibility = System.Windows.Visibility.Visible;
         }
     }
 }

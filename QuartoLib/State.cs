@@ -18,8 +18,6 @@ namespace QuartoLib
 
     public class State
     {
-        
-
         /// <summary>
         /// Game field shows if [i][j]-th
         /// position is occupied by a figure GameField[i][j].

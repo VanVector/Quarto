@@ -4,6 +4,9 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              mc:Ignorable="d" Height="50" Width="50">
+    <UserControl.Background>
+        <ImageBrush ImageSource="/Quarto;component/figures/figure0.png" />
+    </UserControl.Background>
     <Grid Width="50" Height="50">
         <Rectangle Height="50" HorizontalAlignment="Left" Name="FigureRectangle" Stroke="#FFCCCCCC" VerticalAlignment="Top" Width="50" Fill="#FFDDDDDD" RadiusY="2" RadiusX="2" StrokeThickness="2"></Rectangle>
         <Ellipse Name="Ellipse1" Height="12" HorizontalAlignment="Left" Stroke="#FFAAAAAA" VerticalAlignment="Top" Width="12" Margin="6,14,0,0" Fill="White" />

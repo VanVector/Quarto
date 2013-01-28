@@ -272,7 +272,7 @@ namespace Quarto
             foreach (Border circleBorder in GameFieldGrid.Children)
             {
                 circleBorder.Child = null;
-                circleBorder.Background = new SolidColorBrush(Color.FromRgb(0xEE, 0xEE, 0xEE));
+                circleBorder.BorderBrush = new SolidColorBrush(Color.FromRgb(0xEE, 0xEE, 0xEE));
             }
         }
         private void InitializeControls() {
@@ -357,6 +357,8 @@ namespace Quarto
         {
             if (MovePhase == MovePhase.TAKE) return;
             Border placeFigureBorder = (Border)sender;
+            if (placeFigureBorder.Child != null)
+                return;
             Border takeFigureBorder = (Border)FindName("FigureToPlaceBorder");
 
             FigureWrapper figureWrapper = (FigureWrapper)takeFigureBorder.Child;
@@ -365,7 +367,7 @@ namespace Quarto
             placeFigureBorder.Child = figureWrapper;
 
             placeFigureBorder.Cursor = Cursors.Arrow;
-            placeFigureBorder.Background = new SolidColorBrush(Color.FromRgb(0xEE, 0xEE, 0xEE));
+            placeFigureBorder.BorderBrush = new SolidColorBrush(Color.FromRgb(0xEE, 0xEE, 0xEE));
 
             byte x = (byte)Grid.GetRow(placeFigureBorder);
             byte y = (byte)Grid.GetColumn(placeFigureBorder);
@@ -381,14 +383,14 @@ namespace Quarto
             if (circleBorder.Child != null)
                 return;
             circleBorder.Cursor = Cursors.Hand;
-            circleBorder.Background = ActiveHumanPlayer.Brush;
+            circleBorder.BorderBrush = ActiveHumanPlayer.Brush;
         }
 
         private void CircleBorder_MouseLeave(object sender, MouseEventArgs e)
         {
             Border circleBorder = (Border)sender;
             circleBorder.Cursor = Cursors.Arrow;
-            circleBorder.Background = new SolidColorBrush(Color.FromRgb(0xEE, 0xEE, 0xEE));
+            circleBorder.BorderBrush = new SolidColorBrush(Color.FromRgb(0xEE, 0xEE, 0xEE));
         }
         #endregion
 
@@ -450,7 +452,7 @@ namespace Quarto
                         int y = Grid.GetColumn(temp);
                         if (x == line && j == y)
                         {
-                            temp.Background = ActiveHumanPlayer.Brush;
+                            temp.BorderBrush = ActiveHumanPlayer.Brush;
                             break;
                         }
                     }
@@ -463,7 +465,7 @@ namespace Quarto
                         int y = Grid.GetColumn(temp);
                         if (x == i && y == line - 4)
                         {
-                            temp.Background = ActiveHumanPlayer.Brush;
+                            temp.BorderBrush = ActiveHumanPlayer.Brush;
                             break;
                         }
                     }
@@ -477,7 +479,7 @@ namespace Quarto
                         int y = Grid.GetColumn(temp);
                         if (x == i && y == i)
                         {
-                            temp.Background = ActiveHumanPlayer.Brush;
+                            temp.BorderBrush = ActiveHumanPlayer.Brush;
                             break;
                         }
                     }
@@ -491,7 +493,7 @@ namespace Quarto
                         int y = Grid.GetColumn(temp);
                         if (x == i && y == j)
                         {
-                            temp.Background = ActiveHumanPlayer.Brush;
+                            temp.BorderBrush = ActiveHumanPlayer.Brush;
                             break;
                         }
                     }
@@ -529,8 +531,33 @@ namespace Quarto
         #region MenuButtonsEventHandlers
         private void FullScreenMenuItem_Click(object sender, RoutedEventArgs e)
         {
-            
+            if (!isInFullscreenMode)
+            {
+                EnableFullscreen();
+            }
+            else 
+            {
+                DisableFullscreen();
+            }
         }
+
+        private void EnableFullscreen() {
+            if (isInFullscreenMode)
+                return;
+            isInFullscreenMode = true;
+            this.WindowState = System.Windows.WindowState.Maximized;
+            this.WindowStyle = System.Windows.WindowStyle.None;
+        }
+
+        private void DisableFullscreen()
+        {
+            if (!isInFullscreenMode)
+                return;
+            isInFullscreenMode = false;
+            this.WindowState = System.Windows.WindowState.Normal;
+            this.WindowStyle = System.Windows.WindowStyle.SingleBorderWindow;
+        }
+
         private void PlayerVsPlayer_Click(object sender, RoutedEventArgs e)
         {
             CreateNewGame();
@@ -548,8 +575,38 @@ namespace Quarto
         }
         #endregion
 
+        private bool isInFullscreenMode = false;
+        private void Window_KeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Escape) {
+                DisableFullscreen();
+            }
+        }
+        
+        
+        private void AboutMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            AboutWindow aboutWindow = new AboutWindow();
+            aboutWindow.Show();
+        }
 
+        
+        private void RulesMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            RulesWindow rulesWindow = new RulesWindow();
+            rulesWindow.Show();
+        }
 
+        private void StandardPiecesMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            for (int i = 0; i < NF; i++)
+                Wrappers[i].SwitchToPieceView();
+        }
 
+        private void CodeRectanglesMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            for (int i = 0; i < NF; i++)
+                Wrappers[i].SwitchToCodeView();
+        }
     }
 }
