@@ -3,15 +3,15 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-             mc:Ignorable="d" Height="50" Width="50">
+             mc:Ignorable="d" Height="67" Width="67">
     <UserControl.Background>
         <ImageBrush ImageSource="/Quarto;component/figures/figure0.png" />
     </UserControl.Background>
-    <Grid Width="50" Height="50">
-        <Rectangle Height="50" HorizontalAlignment="Left" Name="FigureRectangle" Stroke="#FFCCCCCC" VerticalAlignment="Top" Width="50" Fill="#FFDDDDDD" RadiusY="2" RadiusX="2" StrokeThickness="2"></Rectangle>
-        <Ellipse Name="Ellipse1" Height="12" HorizontalAlignment="Left" Stroke="#FFAAAAAA" VerticalAlignment="Top" Width="12" Margin="6,14,0,0" Fill="White" />
-        <Ellipse Name="Ellipse2" Height="12" HorizontalAlignment="Left" Margin="24,6,0,0" Stroke="#FFAAAAAA" VerticalAlignment="Top" Width="12" Fill="White" />
-        <Ellipse Name="Ellipse3" Height="12" HorizontalAlignment="Left" Margin="14,32,0,0" Stroke="#FFAAAAAA" VerticalAlignment="Top" Width="12" Fill="White" />
-        <Ellipse Name="Ellipse4" Height="12" HorizontalAlignment="Left" Margin="32,24,0,0" Stroke="#FFAAAAAA" VerticalAlignment="Top" Width="12" Fill="#FF444444" />
+    <Grid Width="67" Height="67">
+        <Rectangle Height="67" HorizontalAlignment="Left" Name="FigureRectangle" Stroke="#FFCCCCCC" VerticalAlignment="Top" Width="67" Fill="#FFDDDDDD" RadiusY="3" RadiusX="3" StrokeThickness="2"></Rectangle>
+        <Ellipse Name="Ellipse1" HorizontalAlignment="Left" Stroke="#FFAAAAAA" Width="16" Margin="10,17,0,0" Fill="White" Height="16" VerticalAlignment="Top" />
+        <Ellipse Name="Ellipse2" Height="16" HorizontalAlignment="Right" Margin="0,10,17,0" Stroke="#FFAAAAAA" VerticalAlignment="Top" Width="16" Fill="White" />
+        <Ellipse Name="Ellipse3" HorizontalAlignment="Left" Margin="17,0,0,10" Stroke="#FFAAAAAA" Width="16" Fill="White" Height="16" VerticalAlignment="Bottom" />
+        <Ellipse Name="Ellipse4" Height="16" HorizontalAlignment="Right" Margin="0,0,10,17" Stroke="#FFAAAAAA" VerticalAlignment="Bottom" Width="16" Fill="#FF444444" />
     </Grid>
 </UserControl>

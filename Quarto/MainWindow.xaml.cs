@@ -247,7 +247,7 @@ namespace Quarto
             }
 
             Grid FiguresToTakeGrid = (Grid)FindName("FiguresToTakeGrid");
-            FiguresToTakeGrid.Children.Clear();
+            //FiguresToTakeGrid.Children.Clear();
 
             int k = 0;
             for (i = 0; i < 4; i++)
@@ -255,14 +255,16 @@ namespace Quarto
                 {
                     Wrappers[k] = new FigureWrapper(res[k]);
 
-                    FiguresToTakeGrid.Children.Add(Wrappers[k]);
+                    int b;
+                    for(b = 0; b < 16; b++)
+                        if(Grid.GetRow(FiguresToTakeGrid.Children[b]) == i && Grid.GetColumn(FiguresToTakeGrid.Children[b]) == j)
+                            break;
 
-                    Grid.SetRow(Wrappers[k], i);
-                    Grid.SetColumn(Wrappers[k], j);
+                    ((Border)FiguresToTakeGrid.Children[b]).Child = Wrappers[k];
 
-                    Wrappers[k].MouseUp += FigureWrapper_MouseUp;
-                    Wrappers[k].MouseEnter += FigureWrapper_MouseEnter;
-                    Wrappers[k].MouseLeave += FigureWrapper_MouseLeave;
+                    //Wrappers[k].MouseUp += FigureWrapper_MouseUp;
+                    //Wrappers[k].MouseEnter += FigureWrapper_MouseEnter;
+                    //Wrappers[k].MouseLeave += FigureWrapper_MouseLeave;
 
                     k++;
                 }
@@ -291,7 +293,10 @@ namespace Quarto
         }
         private void StartPvC()
         {
-            //TODO
+            CreateNewGame();
+            gameType = GameType.PvC;
+            PlayerTurn = PlayerTurn.RED;
+            MovePhase = MovePhase.TAKE;
             throw new NotImplementedException();
         }
         private void StartCvP()
@@ -300,56 +305,7 @@ namespace Quarto
             throw new NotImplementedException();
         }
 
-        #region FigureWrapperEventHandlers
-        /// <summary>
-        /// Event handler is utilized when movePhase == TAKE
-        /// and when figure has not been placed or chosen yet.
-        /// </summary>
-        private void FigureWrapper_MouseUp(object sender, MouseButtonEventArgs e)
-        {
-            if (MovePhase == MovePhase.PLACE) return;
-            FigureWrapper wrapper = (FigureWrapper)sender;
-            if (wrapper.FigurePlacedOrChosen)
-                return;
-
-            Grid figuresToTakeGrid = (Grid)FindName("FiguresToTakeGrid");
-            figuresToTakeGrid.Children.Remove(wrapper);
-            Border figureToPlaceBorder = (Border)FindName("FigureToPlaceBorder");
-            figureToPlaceBorder.Child = wrapper;
-
-            wrapper.FigurePlacedOrChosen = true;
-
-            wrapper.Cursor = Cursors.Arrow;
-            Rectangle rec = (Rectangle)wrapper.FindName("FigureRectangle");
-            rec.Stroke = new SolidColorBrush(Color.FromRgb(0xCC, 0xCC, 0xCC));
-
-            ActiveHumanPlayer.FigureTakeMoveMade( wrapper.Figure );
-        }
-        /// <summary>
-        /// Event handler is utilized when figure 
-        /// has not been placed or chosen yet.
-        /// </summary>
-        private void FigureWrapper_MouseEnter(object sender, MouseEventArgs e)
-        {
-            if (MovePhase == MovePhase.PLACE) return;
-            FigureWrapper figureWrapper = (FigureWrapper)sender;
-            if (figureWrapper.FigurePlacedOrChosen) return;
-            figureWrapper.Cursor = Cursors.Hand;
-            Rectangle rec = (Rectangle)figureWrapper.FindName("FigureRectangle");
-            rec.Stroke = ActiveHumanPlayer.Brush;
-        }
-
-        private void FigureWrapper_MouseLeave(object sender, MouseEventArgs e)
-        {
-            FigureWrapper figureWrapper = (FigureWrapper)sender;
-            if (figureWrapper.FigurePlacedOrChosen) return;
-            figureWrapper.Cursor = Cursors.Arrow;
-            Rectangle rec = (Rectangle)(figureWrapper.FindName("FigureRectangle"));
-            rec.Stroke = new SolidColorBrush(Color.FromRgb(0xCC, 0xCC, 0xCC));
-        }
-        #endregion
-
-        #region CircleBorderEventHandlers
+        #region FPCircleBorderEventHandlers
         /// <summary>
         /// Event handler is utilized when MovePhase == PLACE
         /// </summary>
@@ -394,6 +350,49 @@ namespace Quarto
         }
         #endregion
 
+        #region FTCircleBorderEventHandlers
+        /// <summary>
+        /// Event handler is utilized when MovePhase == TAKE
+        /// </summary>
+        private void FTCircleBorder_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            if (MovePhase == MovePhase.PLACE) return;
+            Border figureToTakeBorder = (Border)sender;
+            if (figureToTakeBorder.Child == null)
+                return;
+            Border figureToPlaceBorder = (Border)FindName("FigureToPlaceBorder");
+
+            FigureWrapper figureWrapper = (FigureWrapper)figureToTakeBorder.Child;
+            figureToTakeBorder.Child = null;
+
+            figureToPlaceBorder.Child = figureWrapper;
+
+            figureToTakeBorder.Cursor = Cursors.Arrow;
+            figureToTakeBorder.BorderBrush = new SolidColorBrush(Color.FromArgb(0x00, 0xEE, 0xEE, 0xEE));
+
+            ActiveHumanPlayer.FigureTakeMoveMade(figureWrapper.Figure);
+        }
+        /// <summary>
+        /// Event handler is utilized when MovePhase == TAKE
+        /// </summary>
+        private void FTCircleBorder_MouseEnter(object sender, MouseEventArgs e)
+        {
+            if (MovePhase == MovePhase.PLACE) return;
+            Border circleBorder = (Border)sender;
+            if (circleBorder.Child == null)
+                return;
+            circleBorder.Cursor = Cursors.Hand;
+            circleBorder.BorderBrush = ActiveHumanPlayer.Brush;
+        }
+
+        private void FTCircleBorder_MouseLeave(object sender, MouseEventArgs e)
+        {
+            Border circleBorder = (Border)sender;
+            circleBorder.Cursor = Cursors.Arrow;
+            circleBorder.BorderBrush = new SolidColorBrush(Color.FromArgb(0x00, 0xEE, 0xEE, 0xEE));
+        }
+        #endregion
+
         public void OfferActivePlayerATie() {
             TieAnswer tieAnswer = (MessageBox.Show(
                 string.Format("{0} player was offered a tie! Does he accept it?", ActiveHumanPlayer.PlayerName),
@@ -428,7 +427,7 @@ namespace Quarto
         {
             HighLightTheLine(line);
             MessageBoxResult result = MessageBox.Show(
-                message + " Do you want to play again?",
+                message + "\nDo you want to play again?",
                 "Game Over",
                 MessageBoxButton.YesNo);
             if (result == MessageBoxResult.Yes) 
@@ -583,18 +582,16 @@ namespace Quarto
             }
         }
         
-        
         private void AboutMenuItem_Click(object sender, RoutedEventArgs e)
         {
             AboutWindow aboutWindow = new AboutWindow();
-            aboutWindow.Show();
+            aboutWindow.ShowDialog();
         }
-
         
         private void RulesMenuItem_Click(object sender, RoutedEventArgs e)
         {
             RulesWindow rulesWindow = new RulesWindow();
-            rulesWindow.Show();
+            rulesWindow.ShowDialog();
         }
 
         private void StandardPiecesMenuItem_Click(object sender, RoutedEventArgs e)

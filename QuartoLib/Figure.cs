@@ -5,6 +5,17 @@ using System.Text;
 
 namespace QuartoLib
 {
+    public enum FigureSigns { 
+        White   = 0,
+        Small   = 1,
+        Solid   = 2,
+        Square  = 3,
+        Black   = 4,
+        Big     = 5,
+        Hollow  = 6,
+        Round   = 7
+    }
+
     public class Figure
     {
         public const byte NO_FIGURE = 16;

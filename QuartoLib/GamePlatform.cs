@@ -20,9 +20,9 @@ namespace QuartoLib
     public class GamePlatform
     {
         const string SurrenderMessage = "{1} player has surrendered. Congratulations to {0} player! He is the winner. ";
-        const string QuartoCorrectSayingMessage = "{0} player has won by finding winning line and saying \"Quarto\".";
+        const string QuartoCorrectSayingMessage = "{0} player has won by finding a winning line and saying \"Quarto\".";
         const string QuartoIncorrectSayingMessage = "{0} player is the winner! {1} player has lost by saying \"Quarto\" when there were no winning lines.";
-        const string HaveATieMessage = "Tie! Both player accept it.";
+        const string HaveATieMessage = "Tie! Both players have accepted it.";
 
         const byte NO_LINE = 10;
         const byte NO_SIGN = 8;

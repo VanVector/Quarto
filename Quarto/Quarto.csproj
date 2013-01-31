@@ -128,11 +128,12 @@
       <Name>QuartoLib</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Images\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Resource Include="figures\figure0.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Ромб-Два-Белый-Сплошной.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

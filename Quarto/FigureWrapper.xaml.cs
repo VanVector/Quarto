@@ -69,7 +69,11 @@ namespace Quarto
             e3.Fill = new SolidColorBrush(((figure & 4) == 0) ? Color.FromArgb(255, 0x44, 0x44, 0x44) : Color.FromArgb(255, 255, 255, 255));
             e4.Fill = new SolidColorBrush(((figure & 8) == 0) ? Color.FromArgb(255, 0x44, 0x44, 0x44) : Color.FromArgb(255, 255, 255, 255));
 
-            //this.Background = new ImageBrush(); //"/Quarto;component/figures/figure" + figure + ".png"));
+            this.Background = new ImageBrush
+            {
+                ImageSource = new BitmapImage(new Uri(@"figures\figure" + figure + ".png", UriKind.Relative))
+            };
+            SwitchToPieceView();
         }
 
         public void SwitchToPieceView() {

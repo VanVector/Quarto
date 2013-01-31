@@ -240,8 +240,8 @@ namespace QuartoLib
             byte res = 0;
             if ((figure & 1) == 0) res += (1 << 0); else res += (1 << 4);
             if ((figure & 2) == 0) res += (1 << 1); else res += (1 << 5);
-            if ((figure & 3) == 0) res += (1 << 2); else res += (1 << 6);
-            if ((figure & 4) == 0) res += (1 << 3); else res += (1 << 7);
+            if ((figure & 4) == 0) res += (1 << 2); else res += (1 << 6);
+            if ((figure & 8) == 0) res += (1 << 3); else res += (1 << 7);
             return res;
         }
     }
