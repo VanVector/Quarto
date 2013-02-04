@@ -107,8 +107,14 @@ namespace QuartoLib
         /// </summary>
         public State(State state)
         {
-            GameField = state.GameField;
-            WinableBySign = state.WinableBySign;
+            GameField = new byte[4][];
+            for (int i = 0; i < 4; i++)
+            {
+                GameField[i] = new byte[4];
+                state.GameField[i].CopyTo(GameField[i], 0);
+            }
+            WinableBySign = new byte[10];
+            state.WinableBySign.CopyTo(WinableBySign,0);
             Figures = state.Figures;
             FigureToPlace = state.FigureToPlace;
             FiguresPlaced = state.FiguresPlaced;

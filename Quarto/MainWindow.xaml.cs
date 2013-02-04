@@ -297,12 +297,17 @@ namespace Quarto
             gameType = GameType.PvC;
             PlayerTurn = PlayerTurn.RED;
             MovePhase = MovePhase.TAKE;
-            throw new NotImplementedException();
+            GamePlatform = new GamePlatform(new HumanPlayer(PlayerName.Red, this), new CpuPlayer(new State()));
+            GamePlatform.StartGame();
         }
         private void StartCvP()
         {
-            //TODO
-            throw new NotImplementedException();
+            CreateNewGame();
+            gameType = GameType.PvC;
+            PlayerTurn = PlayerTurn.RED;
+            MovePhase = MovePhase.TAKE;
+            GamePlatform = new GamePlatform(new CpuPlayer(new State()), new HumanPlayer(PlayerName.Red, this));
+            GamePlatform.StartGame();
         }
 
         #region FPCircleBorderEventHandlers

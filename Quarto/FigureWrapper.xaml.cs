@@ -71,7 +71,7 @@ namespace Quarto
 
             this.Background = new ImageBrush
             {
-                ImageSource = new BitmapImage(new Uri(@"figures\figure" + figure + ".png", UriKind.Relative))
+                ImageSource = new BitmapImage(new Uri(@"..\..\figures\figure" + figure + ".png", UriKind.Relative))
             };
             SwitchToPieceView();
         }
