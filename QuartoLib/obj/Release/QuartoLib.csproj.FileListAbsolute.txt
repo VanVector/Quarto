@@ -1,6 +1,0 @@
-C:\Users\VanVector\Desktop\Quarto\Quarto\QuartoLib\obj\Release\ResolveAssemblyReference.cache
-C:\Users\VanVector\Desktop\Quatro\QuartoLib\bin\Release\QuartoLib.dll
-C:\Users\VanVector\Desktop\Quatro\QuartoLib\bin\Release\QuartoLib.pdb
-C:\Users\VanVector\Desktop\Quatro\QuartoLib\obj\Release\ResolveAssemblyReference.cache
-C:\Users\VanVector\Desktop\Quatro\QuartoLib\obj\Release\QuartoLib.dll
-C:\Users\VanVector\Desktop\Quatro\QuartoLib\obj\Release\QuartoLib.pdb
