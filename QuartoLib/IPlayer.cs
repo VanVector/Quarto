@@ -5,8 +5,15 @@ using System.Text;
 
 namespace QuartoLib
 {
+    public enum PlayerName
+    {
+        Red = 0,
+        Blue = 1
+    }
+
     public interface IPlayer
     {
+        PlayerName Name { get; }
         void MakeFigureTakeMove();
         event MoveMadeEventHandler<FigureTakeMove> FigureTakeMoveMadeEvent;
         void MakeFigurePlaceMove();

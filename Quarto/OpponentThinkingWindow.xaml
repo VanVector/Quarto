@@ -1,0 +1,9 @@
+﻿<Window x:Class="Quarto.OpponentThinkingWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Please wait." Height="114" Width="229" WindowStyle="None" ResizeMode="NoResize" ShowInTaskbar="False" WindowStartupLocation="CenterOwner">
+    <Grid Height="76" Width="206">
+        <ProgressBar Height="28" HorizontalAlignment="Left" Margin="7,30,0,0" Name="progressBar1" VerticalAlignment="Top" Width="191" IsIndeterminate="True" />
+        <Label Content="Opponent is thinking. Please wait." Height="28" HorizontalAlignment="Left" Margin="7,0,0,0" Name="label1" VerticalAlignment="Top" Width="191" />
+    </Grid>
+</Window>

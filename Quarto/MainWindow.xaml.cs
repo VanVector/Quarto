@@ -22,145 +22,36 @@ namespace Quarto
         CvP = 2
     };
 
-    public enum PlayerName {
-        Red = 0,
-        Blue = 1
-    }
-
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
     public partial class MainWindow : Window
     {
-        public class HumanPlayer : IPlayer {
-
-            private MainWindow _mainWindow;
-            public MainWindow MainWindow
-            {
-                get { return _mainWindow; }
-                set { _mainWindow = value; }
-            }
-
-            private Brush _brush;
-            public Brush Brush {
-                get { return _brush; }
-                set { _brush = value; }
-            }
-
-            public PlayerName PlayerName;
-            public HumanPlayer(PlayerName playerName, MainWindow mainWindow) {
-                PlayerName = playerName;
-                MainWindow = mainWindow;
-                Brush = (PlayerName == PlayerName.Red)?
-                    new SolidColorBrush(Color.FromRgb(0xCC, 0x55, 0x55)) :
-                    new SolidColorBrush(Color.FromRgb(0x55, 0x55, 0xCC)) ;
-
-            }
-
-            public void MakeFigureTakeMove() {
-                MainWindow.MovePhase = MovePhase.TAKE; // possible solution MainWindow.WaitForFigureTakeMoveMade(this,MovePhase.TAKE)
-                MainWindow.ActiveHumanPlayer = this;
-            }
-            public void MakeFigurePlaceMove() {
-                MainWindow.MovePhase = MovePhase.PLACE;
-                MainWindow.ActiveHumanPlayer = this;
-            }
-            public void MakeTieAnswerMove() {
-                MainWindow.ActiveHumanPlayer = this;
-                MainWindow.OfferActivePlayerATie();
-            }
-
-            public event MoveMadeEventHandler<FigureTakeMove> FigureTakeMoveMadeEvent;
-            public event MoveMadeEventHandler<FigurePlaceMove> FigurePlaceMoveMadeEvent;
-            public event MoveMadeEventHandler<TieAnswerMove> TieAnswerMoveMadeEvent;
-            public event MoveMadeEventHandler<TieOfferMove> TieOfferMoveMadeEvent;
-            public event MoveMadeEventHandler<SurrenderMove> SurrenderMoveMadeEvent;
-            public event MoveMadeEventHandler<QuartoSayingMove> QuartoSayingMoveMadeEvent;
-
-            public void FigureTakeMoveMade(byte Figure) {
-                FigureTakeMoveMadeEvent( new MoveMadeEventArgs<FigureTakeMove>( new FigureTakeMove( Figure) ) );
-            }
-            public void FigurePlaceMoveMade(byte x, byte y) {
-                FigurePlaceMoveMadeEvent(new MoveMadeEventArgs<FigurePlaceMove>(new FigurePlaceMove(x, y)));
-            }
-            public void TieAnswerMoveMade(TieAnswer tieAnswer) {
-                TieAnswerMoveMadeEvent(new MoveMadeEventArgs<TieAnswerMove>(new TieAnswerMove(tieAnswer)));
-            }
-            public void TieOfferMoveMade() {
-                TieOfferMoveMadeEvent(new MoveMadeEventArgs<TieOfferMove>(new TieOfferMove()));
-            }
-            public void SurrenderMoveMade() {
-                SurrenderMoveMadeEvent(new MoveMadeEventArgs<SurrenderMove>(new SurrenderMove()));
-            }
-            public void QuartoSayingMoveMade() {
-                QuartoSayingMoveMadeEvent(new MoveMadeEventArgs<QuartoSayingMove>(new QuartoSayingMove()));
-            }
-
-
-            public void InformAboutMove(Move opponentMove)
-            {
-                if (opponentMove is FigureTakeMove) {
-
-                }
-                else if (opponentMove is FigurePlaceMove) { 
-                
-                }
-                else if (opponentMove is TieAnswerMove)
-                {
-
-                }
-                else if (opponentMove is TieOfferMove)
-                {
-
-                }
-                else if (opponentMove is SurrenderMove)
-                {
-
-                }
-                else if (opponentMove is QuartoSayingMove)
-                {
-
-                }
-            }
-
-            public void Lose(byte line, byte sign, string message)
-            { 
-                //TODO display lose text
-                
-            }
-            public void Win(byte line, byte sign, string message)
-            {
-                //TODO display win text
-                MainWindow.ActiveHumanPlayer = this;
-                MainWindow.InformAboutWin( line,  sign,  message);
-            }
-            public void HaveATie(string message)
-            {
-                //TODO display tie text
-                MainWindow.InformAboutTie();
-            }
-        }
-
         GameType gameType;
         FigureWrapper[] Wrappers;
         GamePlatform GamePlatform;
         const byte NF = 16;
 
-        public HumanPlayer _activeHumanPlayer;
-        public HumanPlayer ActiveHumanPlayer {
-            get { return _activeHumanPlayer;  }
+        Brush ActivePlayerBrush;
+        public IPlayer _activePlayer;
+        public IPlayer ActivePlayer {
+            get { return _activePlayer; }
             set {
-                ActiveHumanPlayerChanging();
-                _activeHumanPlayer = value;
-                ActiveHumanPlayerChanged();
+                ActivePlayerChanging();
+                _activePlayer = value;
+                ActivePlayerChanged(value);
             }
         }
-
-        protected void ActiveHumanPlayerChanging() { }
-        protected void ActiveHumanPlayerChanged() {
+        protected void ActivePlayerChanging() { }
+        protected void ActivePlayerChanged(IPlayer player) {
+            ActivePlayerBrush = (player.Name == PlayerName.Red) ?
+                    new SolidColorBrush(Color.FromRgb(0xCC, 0x55, 0x55)) :
+                    new SolidColorBrush(Color.FromRgb(0x55, 0x55, 0xCC));
             Rectangle TurnIndicatorRectangle = (Rectangle)FindName( "TurnIndicatorRectangle" );
-            TurnIndicatorRectangle.Fill = ActiveHumanPlayer.Brush;
+            TurnIndicatorRectangle.Fill = ActivePlayerBrush;
         }
+
+        OpponentThinkingWindow _opponentThinkingWindow;
 
         private MovePhase _movePhase;
         public MovePhase MovePhase {
@@ -168,7 +59,6 @@ namespace Quarto
             set { _movePhase = value; }
         }
 
-        #region PlayerTurn
         /// <summary>
         /// Current Player
         /// </summary>
@@ -176,32 +66,9 @@ namespace Quarto
         public PlayerTurn PlayerTurn {
             get { return _playerTurn; }
             set {
-                PlayerTurnChanging();
                 _playerTurn = value;
-                PlayerTurnChanged();
             }
         }
-
-        private void PlayerTurnChanging() { 
-        
-        }
-
-        private void PlayerTurnChanged()
-        {
-            /*
-            if (PlayerTurn == PlayerTurn.BLUE)
-            {
-                activePlayerBrush = bluePlayerBrush;
-            }
-            else if (PlayerTurn == PlayerTurn.RED)
-            {
-                activePlayerBrush = redPlayerBrush;
-            }
-            Rectangle TurnIndicatorRectangle = (Rectangle)FindName("TurnIndicatorRectangle");
-            TurnIndicatorRectangle.Fill = activePlayerBrush;
-             * */
-        }
-        #endregion
 
         public MainWindow()
         {
@@ -211,13 +78,38 @@ namespace Quarto
         }
 
         private void CreateNewGame() {
-            InitializeFigures();
             InitializeGameField();
+            InitializeFiguresToTakeField();
+            InitializeFigures();
             InitializeControls();
+            PlayerTurn = PlayerTurn.RED;
+            MovePhase = MovePhase.TAKE;
+        }
+        
+        private Border[] _gameFieldBorders = new Border[16];
+        private void InitializeGameField() {
+            Grid GameFieldGrid = (Grid)FindName("GameFieldGrid");
+            int i = 0;
+            foreach (Border circleBorder in GameFieldGrid.Children)
+            {
+                circleBorder.Child = null;
+                circleBorder.BorderBrush = new SolidColorBrush(Color.FromRgb(0xEE, 0xEE, 0xEE));
+                _gameFieldBorders[i++] = circleBorder;
+            }
         }
 
-        private void InitializeFigures() {
-
+        private Border[] _figuresToTakeBorders = new Border[16];
+        private void InitializeFiguresToTakeField()
+        {
+            Grid FiguresToTakeGrid = (Grid)FindName("FiguresToTakeGrid");
+            int i = 0;
+            foreach (Border circleBorder in FiguresToTakeGrid.Children)
+            {
+                _figuresToTakeBorders[i++] = circleBorder;
+            }
+        }
+        private void InitializeFigures()
+        {
             byte i, j;
             // Shuffle figures randomly
             Wrappers = new FigureWrapper[NF];
@@ -251,17 +143,13 @@ namespace Quarto
 
             int k = 0;
             for (i = 0; i < 4; i++)
-                for (j = 0; j < 4; j++) 
+                for (j = 0; j < 4; j++)
                 {
-                    Wrappers[k] = new FigureWrapper(res[k]);
-
-                    int b;
-                    for(b = 0; b < 16; b++)
-                        if(Grid.GetRow(FiguresToTakeGrid.Children[b]) == i && Grid.GetColumn(FiguresToTakeGrid.Children[b]) == j)
-                            break;
-
-                    ((Border)FiguresToTakeGrid.Children[b]).Child = Wrappers[k];
-
+                    byte tf = res[k]; // byte tf = k;
+                    Wrappers[tf] = new FigureWrapper(tf);
+                    _figuresToTakeBorders[tf].Child = Wrappers[tf];
+                    Grid.SetRow(_figuresToTakeBorders[tf], i);
+                    Grid.SetColumn(_figuresToTakeBorders[tf], j);
                     //Wrappers[k].MouseUp += FigureWrapper_MouseUp;
                     //Wrappers[k].MouseEnter += FigureWrapper_MouseEnter;
                     //Wrappers[k].MouseLeave += FigureWrapper_MouseLeave;
@@ -269,45 +157,121 @@ namespace Quarto
                     k++;
                 }
         }
-        private void InitializeGameField() {
-            Grid GameFieldGrid = (Grid)FindName("GameFieldGrid");
-            foreach (Border circleBorder in GameFieldGrid.Children)
-            {
-                circleBorder.Child = null;
-                circleBorder.BorderBrush = new SolidColorBrush(Color.FromRgb(0xEE, 0xEE, 0xEE));
-            }
-        }
         private void InitializeControls() {
             Border takeFigureBorder = (Border)FindName("FigureToPlaceBorder");
             takeFigureBorder.Child = null;
         }
 
+        public void Restart()
+        {
+            switch (gameType)
+            {
+                case GameType.PvP:
+                    StartPvP(); break;
+                case GameType.PvC:
+                    StartPvC(); break;
+                case GameType.CvP:
+                    StartCvP(); break;
+            }
+        }
         private void StartPvP()
         {
             CreateNewGame();
             gameType = GameType.PvP;
-            PlayerTurn = PlayerTurn.RED;
-            MovePhase = MovePhase.TAKE;
-            GamePlatform = new GamePlatform(new HumanPlayer(PlayerName.Red,this),new HumanPlayer(PlayerName.Blue,this));
+            HumanPlayer red = new HumanPlayer(PlayerName.Red);
+            HumanPlayer blue = new HumanPlayer(PlayerName.Blue);
+            SubscribeToPlayerEvents(red);
+            SubscribeToPlayerEvents(blue);
+            GamePlatform = new GamePlatform( red, blue);
             GamePlatform.StartGame();
         }
         private void StartPvC()
         {
             CreateNewGame();
             gameType = GameType.PvC;
-            PlayerTurn = PlayerTurn.RED;
-            MovePhase = MovePhase.TAKE;
-            GamePlatform = new GamePlatform(new HumanPlayer(PlayerName.Red, this), new CpuPlayer(new State()));
+            HumanPlayer red = new HumanPlayer(PlayerName.Red);
+            SubscribeToPlayerEvents(red);
+            GamePlatform = new GamePlatform(red, new CpuPlayer(new State(), PlayerName.Blue));
             GamePlatform.StartGame();
         }
         private void StartCvP()
         {
             CreateNewGame();
             gameType = GameType.PvC;
-            PlayerTurn = PlayerTurn.RED;
-            MovePhase = MovePhase.TAKE;
-            GamePlatform = new GamePlatform(new CpuPlayer(new State()), new HumanPlayer(PlayerName.Red, this));
+            HumanPlayer blue = new HumanPlayer(PlayerName.Blue);
+            SubscribeToPlayerEvents(blue);
+            GamePlatform = new GamePlatform(new CpuPlayer(new State(), PlayerName.Red), blue);
             GamePlatform.StartGame();
+        }
+
+        private void SubscribeToPlayerEvents(HumanPlayer player) { 
+            player.OrderedToMakeFigureTakeMoveEvent     += PrepareForFigureTakeMove;
+            player.OrderedToMakeFigurePlaceMoveEvent    += PrepareForFigurePlaceMove;
+            player.OrderedToMakeTieAnswerMoveEvent      += OfferPlayerATie;
+
+            player.OpponentFigureTakeMoveMadeEvent      += TakeFigure;
+            player.OpponentFigurePlaceMoveMadeEvent     += PlaceFigure;
+            player.OpponentTieAnswerMoveMadeEvent       += DisplayTieAnswer;
+            //player.OpponentTieOfferMoveMadeEvent += ;
+            //player.OpponentSurrenderMoveMadeEvent += ;
+            //player.OpponentQuartoSayingMoveMadeEvent += ;
+
+            player.WinEvent     += InformAboutWin;
+            player.LoseEvent    += InformAboutLose;
+            player.TieEvent     += InformAboutTie;
+        }
+        public void OfferPlayerATie(HumanPlayer player)
+        {
+            ActivePlayer = player;
+            TieAnswer tieAnswer = (MessageBox.Show(
+                string.Format("{0} player was offered a tie! Does he accept it?", player.Name.ToString()),
+                "Tie Offer",
+                MessageBoxButton.YesNo) == MessageBoxResult.Yes) ? TieAnswer.ACCEPT : TieAnswer.DECLINE;
+            player.TieAnswerMoveMade(tieAnswer);
+        }
+        public void PrepareForFigureTakeMove(HumanPlayer player)
+        {
+            ActivePlayer = player;
+            MovePhase = MovePhase.TAKE;
+        }
+        public void PrepareForFigurePlaceMove(HumanPlayer player)
+        {
+            ActivePlayer = player;
+            MovePhase = MovePhase.PLACE;
+        }
+        public void TakeFigure(MoveMadeEventArgs<FigureTakeMove> moveArgs)
+        {
+            var move = moveArgs.MadeMove;
+            if (gameType == GameType.PvP)
+                return;
+            Border figureToTakeBorder = _figuresToTakeBorders[move.FigureGivenToOpponent];
+            Border figureToPlaceBorder = (Border)FindName("FigureToPlaceBorder");
+            FigureWrapper figureWrapper = (FigureWrapper)figureToTakeBorder.Child;
+            figureToTakeBorder.Child = null;
+            figureToPlaceBorder.Child = figureWrapper;
+        }
+        public void PlaceFigure(MoveMadeEventArgs<FigurePlaceMove> moveArgs)
+        {
+            var move = moveArgs.MadeMove;
+            if (gameType == GameType.PvP)
+                return;
+            Border placeFigureBorder = _gameFieldBorders[move.XFigurePlacedTo * 4 + move.YFigurePlacedTo];
+            Border takeFigureBorder = (Border)FindName("FigureToPlaceBorder");
+            FigureWrapper figureWrapper = (FigureWrapper)takeFigureBorder.Child;
+            takeFigureBorder.Child = null;
+            placeFigureBorder.Child = figureWrapper;
+        }
+        public void DisplayTieAnswer(MoveMadeEventArgs<TieAnswerMove> moveArgs)
+        {
+            var move = moveArgs.MadeMove;
+            if (gameType == GameType.PvP)
+                return;
+            string message;
+            if(move.TieAnswer == TieAnswer.DECLINE)
+                message = string.Format("Tie offer was declined.");
+            else
+                message = string.Format("Tie offer was accepted.");
+            MessageBox.Show(message);
         }
 
         #region FPCircleBorderEventHandlers
@@ -317,6 +281,8 @@ namespace Quarto
         private void CircleBorder_MouseUp(object sender, MouseButtonEventArgs e)
         {
             if (MovePhase == MovePhase.TAKE) return;
+            if (ActivePlayer is HumanPlayer == false)
+                return;
             Border placeFigureBorder = (Border)sender;
             if (placeFigureBorder.Child != null)
                 return;
@@ -333,18 +299,20 @@ namespace Quarto
             byte x = (byte)Grid.GetRow(placeFigureBorder);
             byte y = (byte)Grid.GetColumn(placeFigureBorder);
 
-            ActiveHumanPlayer.FigurePlaceMoveMade(x, y);
+            (ActivePlayer as HumanPlayer).FigurePlaceMoveMade(x, y);
         }
         /// <summary>
         /// Event handler is utilized when MovePhase == PLACE
         /// </summary>
         private void CircleBorder_MouseEnter(object sender, MouseEventArgs e) {
             if (MovePhase == MovePhase.TAKE) return;
+            if (ActivePlayer is HumanPlayer == false)
+                return;
             Border circleBorder = (Border)sender;
             if (circleBorder.Child != null)
                 return;
             circleBorder.Cursor = Cursors.Hand;
-            circleBorder.BorderBrush = ActiveHumanPlayer.Brush;
+            circleBorder.BorderBrush = ActivePlayerBrush;
         }
 
         private void CircleBorder_MouseLeave(object sender, MouseEventArgs e)
@@ -362,6 +330,8 @@ namespace Quarto
         private void FTCircleBorder_MouseUp(object sender, MouseButtonEventArgs e)
         {
             if (MovePhase == MovePhase.PLACE) return;
+            if (ActivePlayer is HumanPlayer == false)
+                return;
             Border figureToTakeBorder = (Border)sender;
             if (figureToTakeBorder.Child == null)
                 return;
@@ -374,8 +344,7 @@ namespace Quarto
 
             figureToTakeBorder.Cursor = Cursors.Arrow;
             figureToTakeBorder.BorderBrush = new SolidColorBrush(Color.FromArgb(0x00, 0xEE, 0xEE, 0xEE));
-
-            ActiveHumanPlayer.FigureTakeMoveMade(figureWrapper.Figure);
+            (ActivePlayer as HumanPlayer).FigureTakeMoveMade(figureWrapper.Figure);
         }
         /// <summary>
         /// Event handler is utilized when MovePhase == TAKE
@@ -383,11 +352,13 @@ namespace Quarto
         private void FTCircleBorder_MouseEnter(object sender, MouseEventArgs e)
         {
             if (MovePhase == MovePhase.PLACE) return;
+            if (ActivePlayer is HumanPlayer == false)
+                return;
             Border circleBorder = (Border)sender;
             if (circleBorder.Child == null)
                 return;
             circleBorder.Cursor = Cursors.Hand;
-            circleBorder.BorderBrush = ActiveHumanPlayer.Brush;
+            circleBorder.BorderBrush = ActivePlayerBrush;
         }
 
         private void FTCircleBorder_MouseLeave(object sender, MouseEventArgs e)
@@ -398,44 +369,39 @@ namespace Quarto
         }
         #endregion
 
-        public void OfferActivePlayerATie() {
-            TieAnswer tieAnswer = (MessageBox.Show(
-                string.Format("{0} player was offered a tie! Does he accept it?", ActiveHumanPlayer.PlayerName),
-                "Tie Offer",
-                MessageBoxButton.YesNo) == MessageBoxResult.Yes)? TieAnswer.ACCEPT: TieAnswer.DECLINE;
-            ActiveHumanPlayer.TieAnswerMoveMade(tieAnswer);
-        }
-
         private bool informedAboutTie;
-        public void InformAboutTie() {
-            if (informedAboutTie)
+        public void InformAboutTie(byte line, byte sign, string message)
+        {
+            if (gameType == GameType.PvP)
             {
-                informedAboutTie = false;
-                return;
+                if (informedAboutTie)
+                {
+                    informedAboutTie = false;
+                    return;
+                }
+                informedAboutTie = true;
             }
-            informedAboutTie = true;
-            MessageBoxResult result = MessageBox.Show(
-                "Tie! Do you want to play again?",
-                "Game Over",
-                MessageBoxButton.YesNo);
-            if (result == MessageBoxResult.Yes)
-            {
-                Restart();
-            }
-            else
-            {
-                Close();
-            }
+            OfferToPlayAgain("Tie!");
         }
-
         public void InformAboutWin(byte line, byte sign, string message )
         {
             HighLightTheLine(line);
+            OfferToPlayAgain(message);
+        }
+        public void InformAboutLose(byte line, byte sign, string message)
+        {
+            if (GameType.PvP == gameType)
+                return;
+            HighLightTheLine(line);
+            OfferToPlayAgain(message);
+        }
+        private void OfferToPlayAgain(string message)
+        {
             MessageBoxResult result = MessageBox.Show(
                 message + "\nDo you want to play again?",
                 "Game Over",
                 MessageBoxButton.YesNo);
-            if (result == MessageBoxResult.Yes) 
+            if (result == MessageBoxResult.Yes)
             {
                 Restart();
             }
@@ -456,7 +422,7 @@ namespace Quarto
                         int y = Grid.GetColumn(temp);
                         if (x == line && j == y)
                         {
-                            temp.BorderBrush = ActiveHumanPlayer.Brush;
+                            temp.BorderBrush = ActivePlayerBrush;
                             break;
                         }
                     }
@@ -469,7 +435,7 @@ namespace Quarto
                         int y = Grid.GetColumn(temp);
                         if (x == i && y == line - 4)
                         {
-                            temp.BorderBrush = ActiveHumanPlayer.Brush;
+                            temp.BorderBrush = ActivePlayerBrush;
                             break;
                         }
                     }
@@ -483,7 +449,7 @@ namespace Quarto
                         int y = Grid.GetColumn(temp);
                         if (x == i && y == i)
                         {
-                            temp.BorderBrush = ActiveHumanPlayer.Brush;
+                            temp.BorderBrush = ActivePlayerBrush;
                             break;
                         }
                     }
@@ -497,38 +463,33 @@ namespace Quarto
                         int y = Grid.GetColumn(temp);
                         if (x == i && y == j)
                         {
-                            temp.BorderBrush = ActiveHumanPlayer.Brush;
+                            temp.BorderBrush = ActivePlayerBrush;
                             break;
                         }
                     }
             }
         }
 
-        public void Restart() {
-            switch (gameType) { 
-                case GameType.PvP:
-                    StartPvP(); break;
-                case GameType.PvC:
-                    StartPvC(); break;
-                case GameType.CvP:
-                    StartCvP(); break;
-            }
-        }
-
         #region ActionButtonEventHandlers
         private void SayQuartoButton_Click(object sender, RoutedEventArgs e)
         {
-            ActiveHumanPlayer.QuartoSayingMoveMade();
+            if(ActivePlayer is HumanPlayer == false)
+                return;
+            (ActivePlayer as HumanPlayer).QuartoSayingMoveMade();
         }
 
         private void TieOfferButton_Click(object sender, RoutedEventArgs e)
         {
-            ActiveHumanPlayer.TieOfferMoveMade();
+            if (ActivePlayer is HumanPlayer == false)
+                return;
+            (ActivePlayer as HumanPlayer).TieOfferMoveMade();
         }
 
         private void SurrenderButton_Click(object sender, RoutedEventArgs e)
         {
-            ActiveHumanPlayer.SurrenderMoveMade();
+            if (ActivePlayer is HumanPlayer == false)
+                return;
+            (ActivePlayer as HumanPlayer).SurrenderMoveMade();
         }
         #endregion
 
@@ -577,7 +538,6 @@ namespace Quarto
             CreateNewGame();
             StartCvP();
         }
-        #endregion
 
         private bool isInFullscreenMode = false;
         private void Window_KeyUp(object sender, KeyEventArgs e)
@@ -610,5 +570,6 @@ namespace Quarto
             for (int i = 0; i < NF; i++)
                 Wrappers[i].SwitchToCodeView();
         }
+        #endregion
     }
 }

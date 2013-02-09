@@ -60,6 +60,9 @@
     <Compile Include="GameField.xaml.cs">
       <DependentUpon>GameField.xaml</DependentUpon>
     </Compile>
+    <Compile Include="OpponentThinkingWindow.xaml.cs">
+      <DependentUpon>OpponentThinkingWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="RulesWindow.xaml.cs">
       <DependentUpon>RulesWindow.xaml</DependentUpon>
     </Compile>
@@ -93,6 +96,10 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="OpponentThinkingWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="RulesWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

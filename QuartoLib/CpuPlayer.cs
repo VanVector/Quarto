@@ -7,7 +7,16 @@ namespace QuartoLib
 {
     public class CpuPlayer: IPlayer
     {
-        
+
+        /// <summary>
+        /// Player color or name
+        /// </summary>
+        private PlayerName _name;
+        public PlayerName Name {
+            get { return _name; }
+            private set { _name = value; }
+        }
+
         /// <summary>
         ///  State given to the player
         /// </summary>
@@ -18,10 +27,17 @@ namespace QuartoLib
         }
 
         /// <summary>
-        /// Initialize Cpu player with current state.
+        /// Currently acceptin tie strategy
         /// </summary>
-        public CpuPlayer(State state) {
+        private bool _acceptTie;
+
+        /// <summary>
+        /// Initialize Cpu player with current state and name.
+        /// </summary>
+        public CpuPlayer(State state, PlayerName name) {
+            _acceptTie = false;
             CurrentState = state;
+            Name = name;
             _gameStates = new ExtendedDictionary();
         }
 
@@ -102,6 +118,17 @@ namespace QuartoLib
         }
         */
 
+        private bool _IsMyTurn(State s) { 
+            int n = s.FiguresPlaced * 2 + ((s.FigureToPlace == Figure.NO_FIGURE)? 0: 1);
+            if (Name == PlayerName.Red)
+                if ((((n + 1) / 2) & 1) == 0)
+                    return true;
+            if (Name == PlayerName.Blue)
+                if ((((n + 1) / 2) & 1) == 1)
+                    return true;
+            return false;
+        }
+
         private static bool _StateIsWinningBySayingQuarto(State s) {
             if (s.LastFigurePlaced == Figure.NO_FIGURE)
                 return false;
@@ -170,7 +197,12 @@ namespace QuartoLib
             return false;
         }
 
-        protected sbyte dfs_placeMove(State s) {
+        protected sbyte dfs_placeMove(ExtendedState s, int depth)
+        {
+            if (depth == 0)
+                // consider temporary state as a tie
+                return 0;
+
             bool hasTieMove = false;
             byte i, j;
             for (i = 0; i < 4; i++)
@@ -178,13 +210,15 @@ namespace QuartoLib
                     if (s.GameField[i][j] == Figure.NO_FIGURE)
                     {
                         FigurePlaceMove tmove = new FigurePlaceMove(i, j); // current move
-                        sbyte tprice = dfs_takeMove(new State(s, tmove));
+                        sbyte tprice = dfs_takeMove(new ExtendedState(s, tmove), depth-1);
                         if (tprice == 1)
                         {
                             return 1;
                         }
                         else if (tprice == 0)
+                        {
                             hasTieMove = true;
+                        }
                     }
             if (!hasTieMove)
             {
@@ -198,19 +232,26 @@ namespace QuartoLib
             }
         }
 
-        protected sbyte dfs_takeMove(State s)
+        protected sbyte dfs_takeMove(ExtendedState s, int depth)
         {
+            short a = s.CodedState.CodedCellsAreOccupied;
+            long b = s.CodedState.CodedFigurePlaced;
             if (s.FiguresPlaced == 16)
                 return 0; // all figures placed
 
-            CodedState codedState = new CodedState(s);
-            if (_gameStates.ContainsKey(codedState))
-                return _gameStates[codedState];
+            if (_gameStates.ContainsKey(s.CodedState))
+                return _gameStates[s.CodedState];
 
             if (_StateIsWinningBySayingQuarto(s))
             {
-                _gameStates.Add(codedState, 1);
+                _gameStates.Add(s.CodedState, 1);
                 return 1;
+            }
+
+            if (depth == 0)
+            {
+                // consider temporary state as a tie
+                return 0;
             }
 
             bool hasTieMove = false;
@@ -219,26 +260,28 @@ namespace QuartoLib
                 if (((s.Figures >> f) & 1) == 0)
                 {
                     FigureTakeMove tmove = new FigureTakeMove(f); // current move
-                    sbyte tprice = dfs_placeMove(new State(s, tmove));
+                    sbyte tprice = dfs_placeMove(new ExtendedState(s, tmove), depth-1);
                     if (tprice == -1)
                     {
-                        _gameStates.Add(codedState, 1);
+                        _gameStates.Add(s.CodedState, 1);
                         return 1;
                     }
                     else if (tprice == 0)
+                    {
                         hasTieMove = true;
+                    }
                 }
 
             if (!hasTieMove)
             {
                 // no tie moves / winning moves, then lose
-                _gameStates.Add(codedState, -1);
+                _gameStates.Add(s.CodedState, -1);
                 return -1;
             }
             else
             {
                 // no winning moves, but there is a tie move
-                _gameStates.Add(codedState, 0);
+                _gameStates.Add(s.CodedState, 0);
                 return 0;
             }
         }
@@ -257,12 +300,8 @@ namespace QuartoLib
                 return;
             }
 
-            // possibly not significant moves
-            if (CurrentState.FiguresPlaced < 3) { 
-                
-            }
-
             ExtendedState extendedCurrentState = new ExtendedState( CurrentState );
+            int iterationDepth = _GetIterationDepth(CurrentState);
             Random r = new Random((int)DateTime.Now.Ticks & 0x0000FFFF);
             FigureTakeMove anyTieMove = null;
             FigureTakeMove anyMove = null;
@@ -277,7 +316,9 @@ namespace QuartoLib
                     nMoves++;
                     FigureTakeMove tmove = new FigureTakeMove(f); // temp possible move
                     if (r.Next(nMoves) == nMoves - 1) anyMove = tmove;
-                    sbyte tprice = dfs_placeMove(new ExtendedState( extendedCurrentState, tmove));
+                    if (iterationDepth == 0)
+                        continue; // any valid move is accepted
+                    sbyte tprice = dfs_placeMove(new ExtendedState( extendedCurrentState, tmove),iterationDepth);
                     if (tprice == -1)
                     {
                         nWinMoves++;
@@ -292,7 +333,7 @@ namespace QuartoLib
             FigureTakeMove move;
             if (anyWinMove != null) move = anyWinMove; // randomly taken win move
             else if (anyTieMove != null) move = anyTieMove; // randomly taken tie move
-            else move = anyMove; // randomly taken lose move
+            else move = anyMove; // randomly taken move
             CurrentState = new State(CurrentState, move);
             FigureTakeMoveMadeEvent(new MoveMadeEventArgs<FigureTakeMove>(move));
         }
@@ -305,13 +346,9 @@ namespace QuartoLib
                 return;
             }
 
-            // possibly not significant moves
-            if (CurrentState.FiguresPlaced < 3)
-            {
-
-            }
-
+            //_gameStates = new ExtendedDictionary();
             ExtendedState extendedCurrentState = new ExtendedState( CurrentState );
+            int iterationDepth = _GetIterationDepth(CurrentState);
             Random r = new Random((int)DateTime.Now.Ticks & 0x0000FFFF);
             FigurePlaceMove anyTieMove = null;
             FigurePlaceMove anyMove = null;
@@ -327,7 +364,9 @@ namespace QuartoLib
                         nMoves++;
                         FigurePlaceMove tmove = new FigurePlaceMove(i, j); // temp possible move
                         if (r.Next(nMoves) == nMoves - 1) anyMove = tmove;
-                        sbyte tprice = dfs_takeMove(new ExtendedState(extendedCurrentState, tmove));
+                        if (iterationDepth == 0) 
+                            continue; // any valid move is accepted
+                        sbyte tprice = dfs_takeMove(new ExtendedState(extendedCurrentState, tmove), iterationDepth);
                         if (tprice == 1)
                         {
                             nWinMoves++;
@@ -343,14 +382,15 @@ namespace QuartoLib
             FigurePlaceMove move;
             if (anyWinMove != null) move = anyWinMove; // randomly taken win move
             else if (anyTieMove != null) move = anyTieMove; // randomly taken tie move
-            else move = anyMove; // randomly taken lose move
+            else move = anyMove; // randomly taken move
             CurrentState = new State(CurrentState, move);
             FigurePlaceMoveMadeEvent(new MoveMadeEventArgs<FigurePlaceMove>(move));
         }
         public event MoveMadeEventHandler<FigurePlaceMove> FigurePlaceMoveMadeEvent;
         public void MakeTieAnswerMove()
         {
-            if (_StateIsWinningBySayingQuarto(CurrentState) || _gameStates[new CodedState( CurrentState)] == 1)
+            if (_StateIsWinningBySayingQuarto(CurrentState) ||
+                _gameStates.ContainsKey(new CodedState(CurrentState)) && _gameStates[new CodedState(CurrentState)] == 1)
                 // accept the tie
                 TieAnswerMoveMadeEvent(new MoveMadeEventArgs<TieAnswerMove>(new TieAnswerMove(TieAnswer.ACCEPT)));
             else
@@ -392,24 +432,37 @@ namespace QuartoLib
         public void HaveATie(string message) { }
 
         private ExtendedDictionary _gameStates;
+
+        /// <summary>
+        /// Array contains precalculated values for iterative deepening while 
+        /// using dfs. This values should reflect suitable number of states and
+        /// move taking time.
+        /// </summary>
+        private int[] _iterationDepth = new int[32] { 0, 0, 0, 0, 0, 0, 1, 6, 7, 6, 6, 8, 8, 9, 9, 12, 
+            14, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16};
+        private int _GetIterationDepth(State s) {
+            int n = s.FiguresPlaced * 2 + ((s.FigureToPlace == Figure.NO_FIGURE)? 0: 1);
+            return _iterationDepth[n];
+        }
     }
 
     public class CodedState {
         public long CodedFigurePlaced;
         public short CodedCellsAreOccupied;
         public CodedState( State state ) {
-            CodedFigurePlaced = CodedCellsAreOccupied = 0;
+            CodedFigurePlaced = 0;
+            CodedCellsAreOccupied = 0;
             for (int i = 0; i < 4; i++)
                 for (int j = 0; j < 4; j++)
-                    if(state.GameField[i][j] == Figure.NO_FIGURE) {
-                        CodedFigurePlaced <<= 4;
-                        CodedCellsAreOccupied <<= 1;
-                    } else {
+                {
+                    CodedFigurePlaced <<= 4;
+                    CodedCellsAreOccupied <<= 1;
+                    if (state.GameField[i][j] != Figure.NO_FIGURE)
+                    {
                         CodedCellsAreOccupied |= 1;
-                        CodedCellsAreOccupied <<= 1;
-                        CodedFigurePlaced |= (state.GameField[i][j] & 0x0F);
-                        CodedFigurePlaced <<= 4;
+                        CodedFigurePlaced |= state.GameField[i][j];
                     }
+                }
         }
         public CodedState(CodedState s) {
             CodedFigurePlaced = s.CodedFigurePlaced;
@@ -468,9 +521,11 @@ namespace QuartoLib
             byte y = move.YFigurePlacedTo;
             int n = x * 4 + y;
             // occupy the field cell
-            CodedState.CodedCellsAreOccupied |= (short)(1 << n);
+            if((CodedState.CodedCellsAreOccupied & (short)(1 << (15 - n))) != 0)
+                throw new Exception("Aha!");
+            CodedState.CodedCellsAreOccupied |= (short)(1 << (15 - n));
             // put the figure on the cell
-            CodedState.CodedFigurePlaced |= ((long)f << n);
+            CodedState.CodedFigurePlaced |= ((long)f << (15 - n) * 4);
         }
 
         public ExtendedState(ExtendedState s, FigureTakeMove move)
