@@ -13,6 +13,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 
 using QuartoLib;
+using System.Threading;
 
 namespace Quarto
 {
@@ -341,10 +342,31 @@ namespace Quarto
             figureToTakeBorder.Child = null;
 
             figureToPlaceBorder.Child = figureWrapper;
-
             figureToTakeBorder.Cursor = Cursors.Arrow;
             figureToTakeBorder.BorderBrush = new SolidColorBrush(Color.FromArgb(0x00, 0xEE, 0xEE, 0xEE));
+
+            //Thread t = new Thread(abc);
+            //List<object> paramL = new List<object>();
+            //paramL.Add(ActivePlayer);
+            //paramL.Add(figureWrapper.Figure);
+            //t.Start(paramL);
+
             (ActivePlayer as HumanPlayer).FigureTakeMoveMade(figureWrapper.Figure);
+        }
+
+        public static void abc(object param) {
+            if (!(param is List<object>))
+                throw new ArgumentException("Invalid parameter");
+            List<object> paramL = param as List<object>;
+            if(paramL.Count != 2)
+                throw new ArgumentException("Invalid parameter");
+            if(!(paramL[0] is HumanPlayer) || !(paramL[1] is byte))
+                throw new ArgumentException("Invalid parameter");
+
+            HumanPlayer player = paramL[0] as HumanPlayer;
+            byte figure = (byte)paramL[1];
+
+            player.FigureTakeMoveMade(figure);
         }
         /// <summary>
         /// Event handler is utilized when MovePhase == TAKE

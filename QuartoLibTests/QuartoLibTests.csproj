@@ -2,18 +2,20 @@
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{0CFA420F-EAE8-4A3D-84AB-A3FA4F8A054E}</ProjectGuid>
-    <OutputType>Library</OutputType>
+    <ProjectGuid>{BD146056-2150-47BE-AACB-8D84B649761D}</ProjectGuid>
+    <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>QuartoLib</RootNamespace>
-    <AssemblyName>QuartoLib</AssemblyName>
+    <RootNamespace>QuartoLibTests</RootNamespace>
+    <AssemblyName>QuartoLibTests</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
+    <PlatformTarget>x86</PlatformTarget>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
@@ -22,7 +24,8 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
+    <PlatformTarget>x86</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -31,6 +34,13 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="nunit-console-runner">
+      <HintPath>NUnit\nunit-console-runner.dll</HintPath>
+    </Reference>
+    <Reference Include="nunit.framework, Version=2.5.10.11092, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>NUnit\nunit.framework.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -40,18 +50,24 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Action.cs" />
-    <Compile Include="Cpu\CodedState.cs" />
-    <Compile Include="Cpu\ExtendedDictionary.cs" />
-    <Compile Include="Cpu\ExtendedState.cs" />
-    <Compile Include="Figure.cs" />
-    <Compile Include="GamePlatform.cs" />
-    <Compile Include="HumanPlayer.cs" />
-    <Compile Include="Move.cs" />
-    <Compile Include="Cpu\CpuPlayer.cs" />
-    <Compile Include="IPlayer.cs" />
+    <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="State.cs" />
+    <Compile Include="TestCpuPlayer.cs" />
+    <Compile Include="TestFixture.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="NUnit\nunit-console-runner.dll" />
+    <None Include="NUnit\nunit.framework.dll" />
+    <None Include="NUnit\nunit.mocks.dll" />
+    <None Include="NUnit\nunit.util.dll" />
+    <None Include="NUnit\nunit.core.interfaces.dll" />
+    <None Include="NUnit\nunit.core.dll" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\QuartoLib\QuartoLib.csproj">
+      <Project>{0CFA420F-EAE8-4A3D-84AB-A3FA4F8A054E}</Project>
+      <Name>QuartoLib</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

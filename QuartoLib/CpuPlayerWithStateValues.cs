@@ -197,92 +197,104 @@ namespace QuartoLib
             return false;
         }
 
-        protected sbyte dfs_placeMove(ExtendedState s, int depth)
+        protected StateValue dfs_placeMove(ExtendedState s, int depth)
         {
             if (depth == 0)
                 // consider temporary state as a tie
-                return 0;
+                return StateValue.TieStateValue;
 
             bool hasTieMove = false;
+            StateValue longestLoseMove = new StateValue(-1,100);
             byte i, j;
             for (i = 0; i < 4; i++)
                 for (j = 0; j < 4; j++)
                     if (s.GameField[i][j] == Figure.NO_FIGURE)
                     {
                         FigurePlaceMove tmove = new FigurePlaceMove(i, j); // current move
-                        sbyte tprice = dfs_takeMove(new ExtendedState(s, tmove), depth-1);
-                        if (tprice == 1)
+                        StateValue sValue = dfs_takeMove(new ExtendedState(s, tmove), depth - 1);
+                        if (sValue.Price == 1)
                         {
-                            return 1;
+                            return new StateValue(sValue.Price, (byte)(sValue.StepLen + 1));
                         }
-                        else if (tprice == 0)
+                        else if (sValue.Price == 0)
                         {
                             hasTieMove = true;
+                        }
+                        else 
+                        {
+                            if (longestLoseMove.StepLen > sValue.StepLen)
+                                longestLoseMove = sValue;
                         }
                     }
             if (!hasTieMove)
             {
                 // no tie moves / winning moves, then lose
-                return -1;
+                return new StateValue(-1, (byte)(longestLoseMove.StepLen + 1));
             }
             else
             {
                 // no winning moves, but there is a tie move
-                return 0;
+                return StateValue.TieStateValue;
             }
         }
 
-        protected sbyte dfs_takeMove(ExtendedState s, int depth)
+        protected StateValue dfs_takeMove(ExtendedState s, int depth)
         {
-            short a = s.CodedState.CodedCellsAreOccupied;
-            long b = s.CodedState.CodedFigurePlaced;
             if (s.FiguresPlaced == 16)
-                return 0; // all figures placed
+                return StateValue.TieStateValue; // all figures placed
 
             if (_gameStates.ContainsKey(s.CodedState))
                 return _gameStates[s.CodedState];
 
             if (_StateIsWinningBySayingQuarto(s))
             {
-                _gameStates.Add(s.CodedState, 1);
-                return 1;
+                StateValue stv = new StateValue(1, 0);
+                _gameStates.Add(s.CodedState, stv);
+                return stv;
             }
 
             if (depth == 0)
             {
                 // consider temporary state as a tie
-                return 0;
+                return StateValue.TieStateValue;
             }
 
+            StateValue longestLoseMove = new StateValue(-1,100);
             bool hasTieMove = false;
             byte f;
             for (f = 0; f < 16; f++)
                 if (((s.Figures >> f) & 1) == 0)
                 {
                     FigureTakeMove tmove = new FigureTakeMove(f); // current move
-                    sbyte tprice = dfs_placeMove(new ExtendedState(s, tmove), depth-1);
-                    if (tprice == -1)
+                    StateValue sValue = dfs_placeMove(new ExtendedState(s, tmove), depth - 1);
+                    if (sValue.Price == -1)
                     {
-                        _gameStates.Add(s.CodedState, 1);
-                        return 1;
+                        StateValue winStateValue = new StateValue(1, (byte)(sValue.StepLen + 1));
+                        _gameStates.Add(s.CodedState, winStateValue);
+                        return winStateValue;
                     }
-                    else if (tprice == 0)
+                    else if (sValue.Price == 0)
                     {
                         hasTieMove = true;
+                    }
+                    else { 
+                        if (longestLoseMove.StepLen > sValue.StepLen)
+                            longestLoseMove = sValue;
                     }
                 }
 
             if (!hasTieMove)
             {
                 // no tie moves / winning moves, then lose
-                _gameStates.Add(s.CodedState, -1);
-                return -1;
+                StateValue loseStateValue = new StateValue(-1, (byte)(longestLoseMove.StepLen + 1));
+                _gameStates.Add(s.CodedState, loseStateValue);
+                return loseStateValue;
             }
             else
             {
                 // no winning moves, but there is a tie move
-                _gameStates.Add(s.CodedState, 0);
-                return 0;
+                _gameStates.Add(s.CodedState, StateValue.TieStateValue);
+                return StateValue.TieStateValue;
             }
         }
 
@@ -303,37 +315,62 @@ namespace QuartoLib
             ExtendedState extendedCurrentState = new ExtendedState( CurrentState );
             int iterationDepth = _GetIterationDepth(CurrentState);
             Random r = new Random((int)DateTime.Now.Ticks & 0x0000FFFF);
+
+            StateValue longestLoseMoveSV = new StateValue(-1, 0);
+            StateValue shortestWinMoveSV = new StateValue(-1, 100);
             FigureTakeMove anyTieMove = null;
-            FigureTakeMove anyMove = null;
-            FigureTakeMove anyWinMove = null;
+            FigureTakeMove longestLoseMove = null;
+            FigureTakeMove shortestWinMove = null;
+
             int nTieMoves = 0;
-            int nMoves = 0;
-            int nWinMoves = 0;
+            int nLongestMoves = 0;
+            int nShortestWinMoves = 0;
             byte f;
             for (f = 0; f < 16; f++)
                 if (((CurrentState.Figures >> f) & 1) == 0)
                 {
-                    nMoves++;
+                    
                     FigureTakeMove tmove = new FigureTakeMove(f); // temp possible move
-                    if (r.Next(nMoves) == nMoves - 1) anyMove = tmove;
-                    if (iterationDepth == 0)
-                        continue; // any valid move is accepted
-                    sbyte tprice = dfs_placeMove(new ExtendedState( extendedCurrentState, tmove),iterationDepth);
-                    if (tprice == -1)
+                    StateValue sValue = dfs_placeMove(new ExtendedState( extendedCurrentState, tmove),iterationDepth);
+
+                    if (sValue.Price == -1)
                     {
-                        nWinMoves++;
-                        if (r.Next(nWinMoves) == nWinMoves - 1) anyWinMove = tmove;
+                        if (sValue.StepLen < shortestWinMoveSV.StepLen)
+                        {
+                            nShortestWinMoves = 1;
+                            shortestWinMove = tmove;
+                            shortestWinMoveSV = sValue;
+                        }
+                        else if (sValue.StepLen == shortestWinMoveSV.StepLen) {
+                            nShortestWinMoves++;
+                            if (r.Next(nShortestWinMoves) == nShortestWinMoves - 1) shortestWinMove = tmove;
+                        }
                     }
-                    else if (tprice == 0)
+                    else if (sValue.Price == 0)
                     {
                         nTieMoves++;
                         if (r.Next(nTieMoves) == nTieMoves - 1) anyTieMove = tmove;
                     }
+                    else 
+                    {
+                        if (sValue.StepLen > longestLoseMoveSV.StepLen)
+                        {
+                            nLongestMoves = 1;
+                            longestLoseMove = tmove;
+                            longestLoseMoveSV = sValue;
+                        }
+                        else if (sValue.StepLen == longestLoseMoveSV.StepLen)
+                        {
+                            nLongestMoves++;
+                            if (r.Next(nLongestMoves) == nLongestMoves - 1) longestLoseMove = tmove;
+                        }
+                    }
                 }
+
             FigureTakeMove move;
-            if (anyWinMove != null) move = anyWinMove; // randomly taken win move
+            if (shortestWinMove != null) move = shortestWinMove; // randomly taken win move
             else if (anyTieMove != null) move = anyTieMove; // randomly taken tie move
-            else move = anyMove; // randomly taken move
+            else move = longestLoseMove; // randomly taken move
             CurrentState = new State(CurrentState, move);
             FigureTakeMoveMadeEvent(new MoveMadeEventArgs<FigureTakeMove>(move));
         }
@@ -350,39 +387,63 @@ namespace QuartoLib
             ExtendedState extendedCurrentState = new ExtendedState( CurrentState );
             int iterationDepth = _GetIterationDepth(CurrentState);
             Random r = new Random((int)DateTime.Now.Ticks & 0x0000FFFF);
+
+            StateValue longestLoseMoveSV = new StateValue(-1, 0);
+            StateValue shortestWinMoveSV = new StateValue(-1, 100);
             FigurePlaceMove anyTieMove = null;
-            FigurePlaceMove anyMove = null;
-            FigurePlaceMove anyWinMove = null;
+            FigurePlaceMove longestLoseMove = null;
+            FigurePlaceMove shortestWinMove = null;
+
             int nTieMoves = 0;
-            int nMoves = 0;
-            int nWinMoves = 0;
+            int nLongestMoves = 0;
+            int nShortestWinMoves = 0;
+
             byte i, j;
             for (i = 0; i < 4; i++)
                 for (j = 0; j < 4; j++)
                     if (CurrentState.GameField[i][j] == Figure.NO_FIGURE)
                     {
-                        nMoves++;
                         FigurePlaceMove tmove = new FigurePlaceMove(i, j); // temp possible move
-                        if (r.Next(nMoves) == nMoves - 1) anyMove = tmove;
-                        if (iterationDepth == 0) 
-                            continue; // any valid move is accepted
-                        sbyte tprice = dfs_takeMove(new ExtendedState(extendedCurrentState, tmove), iterationDepth);
-                        if (tprice == 1)
+                        StateValue sValue = dfs_takeMove(new ExtendedState(extendedCurrentState, tmove), iterationDepth);
+
+                        if (sValue.Price == 1)
                         {
-                            nWinMoves++;
-                            if (r.Next(nWinMoves) == nWinMoves - 1) anyWinMove = tmove;
+                            if (sValue.StepLen < shortestWinMoveSV.StepLen)
+                            {
+                                nShortestWinMoves = 1;
+                                shortestWinMove = tmove;
+                                shortestWinMoveSV = sValue;
+                            }
+                            else if (sValue.StepLen == shortestWinMoveSV.StepLen)
+                            {
+                                nShortestWinMoves++;
+                                if (r.Next(nShortestWinMoves) == nShortestWinMoves - 1) shortestWinMove = tmove;
+                            }
                         }
-                        else if (tprice == 0)
+                        else if (sValue.Price == 0)
                         {
                             nTieMoves++;
                             if (r.Next(nTieMoves) == nTieMoves - 1) anyTieMove = tmove;
                         }
+                        else {
+                            if (sValue.StepLen > longestLoseMoveSV.StepLen)
+                            {
+                                nLongestMoves = 1;
+                                longestLoseMove = tmove;
+                                longestLoseMoveSV = sValue;
+                            }
+                            else if (sValue.StepLen == longestLoseMoveSV.StepLen)
+                            {
+                                nLongestMoves++;
+                                if (r.Next(nLongestMoves) == nLongestMoves - 1) longestLoseMove = tmove;
+                            }
+                        }
                     }
 
             FigurePlaceMove move;
-            if (anyWinMove != null) move = anyWinMove; // randomly taken win move
+            if (shortestWinMove != null) move = shortestWinMove; // randomly taken win move
             else if (anyTieMove != null) move = anyTieMove; // randomly taken tie move
-            else move = anyMove; // randomly taken move
+            else move = longestLoseMove; // randomly taken move
             CurrentState = new State(CurrentState, move);
             FigurePlaceMoveMadeEvent(new MoveMadeEventArgs<FigurePlaceMove>(move));
         }
@@ -390,7 +451,7 @@ namespace QuartoLib
         public void MakeTieAnswerMove()
         {
             if (_StateIsWinningBySayingQuarto(CurrentState) ||
-                _gameStates.ContainsKey(new CodedState(CurrentState)) && _gameStates[new CodedState(CurrentState)] == 1)
+                _gameStates.ContainsKey(new CodedState(CurrentState)) && _gameStates[new CodedState(CurrentState)].Price == 1)
                 // accept the tie
                 TieAnswerMoveMadeEvent(new MoveMadeEventArgs<TieAnswerMove>(new TieAnswerMove(TieAnswer.ACCEPT)));
             else
@@ -438,11 +499,36 @@ namespace QuartoLib
         /// using dfs. This values should reflect suitable number of states and
         /// move taking time.
         /// </summary>
-        private int[] _iterationDepth = new int[32] { 0, 0, 0, 0, 0, 0, 1, 6, 7, 6, 6, 8, 8, 9, 9, 12, 
+        private int[] _iterationDepth = new int[32] { 0, 0, 0, 0, 0, 0, 1, 6, 7, 7, 7, 8, 8, 9, 9, 12, 
             14, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16};
         private int _GetIterationDepth(State s) {
             int n = s.FiguresPlaced * 2 + ((s.FigureToPlace == Figure.NO_FIGURE)? 0: 1);
             return _iterationDepth[n];
+        }
+    }
+
+    public class StateValue {
+        public static StateValue TieStateValue = new StateValue(0, 0);
+
+        private sbyte _price;
+        public sbyte Price {
+            get { return _price; }
+            private set { _price = value; }
+        }
+
+        private byte _stepLen;
+        public byte StepLen
+        {
+            get { return _stepLen; }
+            private set { _stepLen = value; }
+        }
+
+        public StateValue(sbyte price, byte stepLen) {
+            if (price == 0)
+                if (stepLen != 0)
+                    throw new ArgumentException("state value can have StepLen property set to 0 in case Price is 0");
+            _stepLen = stepLen;
+            _price = price;
         }
     }
 
@@ -471,11 +557,11 @@ namespace QuartoLib
     }
 
     public class ExtendedDictionary {
-        private Dictionary<short, Dictionary<long, sbyte>> innerDictionary;
-        public void Add(CodedState s, sbyte value) {
+        private Dictionary<short, Dictionary<long, StateValue>> innerDictionary;
+        public void Add(CodedState s, StateValue stv) {
             if (!innerDictionary.ContainsKey(s.CodedCellsAreOccupied))
-                innerDictionary.Add(s.CodedCellsAreOccupied, new Dictionary<long, sbyte>());
-            innerDictionary[s.CodedCellsAreOccupied].Add(s.CodedFigurePlaced, value);
+                innerDictionary.Add(s.CodedCellsAreOccupied, new Dictionary<long, StateValue>());
+            innerDictionary[s.CodedCellsAreOccupied].Add(s.CodedFigurePlaced, stv);
         }
         public bool ContainsKey(CodedState s)
         {
@@ -485,7 +571,7 @@ namespace QuartoLib
             return false;
         }
 
-        public sbyte this[CodedState s]
+        public StateValue this[CodedState s]
         {
             get {
                 return innerDictionary[s.CodedCellsAreOccupied][s.CodedFigurePlaced];
@@ -493,7 +579,7 @@ namespace QuartoLib
         }
         public ExtendedDictionary()
         {
-            innerDictionary = new Dictionary<short, Dictionary<long, sbyte>>();
+            innerDictionary = new Dictionary<short, Dictionary<long, StateValue>>();
         }
     }
 
