@@ -14,6 +14,7 @@ using System.Windows.Shapes;
 
 using QuartoLib;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace Quarto
 {
@@ -48,11 +49,8 @@ namespace Quarto
             ActivePlayerBrush = (player.Name == PlayerName.Red) ?
                     new SolidColorBrush(Color.FromRgb(0xCC, 0x55, 0x55)) :
                     new SolidColorBrush(Color.FromRgb(0x55, 0x55, 0xCC));
-            Rectangle TurnIndicatorRectangle = (Rectangle)FindName( "TurnIndicatorRectangle" );
             TurnIndicatorRectangle.Fill = ActivePlayerBrush;
         }
-
-        OpponentThinkingWindow _opponentThinkingWindow;
 
         private MovePhase _movePhase;
         public MovePhase MovePhase {
@@ -75,7 +73,8 @@ namespace Quarto
         {
             InitializeComponent();
             // Start Player Vs Player Game
-            StartPvP();
+            gameType = GameType.PvP;
+            Restart();
         }
 
         private void CreateNewGame() {
@@ -89,7 +88,6 @@ namespace Quarto
         
         private Border[] _gameFieldBorders = new Border[16];
         private void InitializeGameField() {
-            Grid GameFieldGrid = (Grid)FindName("GameFieldGrid");
             int i = 0;
             foreach (Border circleBorder in GameFieldGrid.Children)
             {
@@ -102,7 +100,6 @@ namespace Quarto
         private Border[] _figuresToTakeBorders = new Border[16];
         private void InitializeFiguresToTakeField()
         {
-            Grid FiguresToTakeGrid = (Grid)FindName("FiguresToTakeGrid");
             int i = 0;
             foreach (Border circleBorder in FiguresToTakeGrid.Children)
             {
@@ -165,6 +162,8 @@ namespace Quarto
 
         public void Restart()
         {
+            _DisplayStopThinking();
+            CreateNewGame();
             switch (gameType)
             {
                 case GameType.PvP:
@@ -177,7 +176,6 @@ namespace Quarto
         }
         private void StartPvP()
         {
-            CreateNewGame();
             gameType = GameType.PvP;
             HumanPlayer red = new HumanPlayer(PlayerName.Red);
             HumanPlayer blue = new HumanPlayer(PlayerName.Blue);
@@ -188,7 +186,6 @@ namespace Quarto
         }
         private void StartPvC()
         {
-            CreateNewGame();
             gameType = GameType.PvC;
             HumanPlayer red = new HumanPlayer(PlayerName.Red);
             SubscribeToPlayerEvents(red);
@@ -197,8 +194,7 @@ namespace Quarto
         }
         private void StartCvP()
         {
-            CreateNewGame();
-            gameType = GameType.PvC;
+            gameType = GameType.CvP;
             HumanPlayer blue = new HumanPlayer(PlayerName.Blue);
             SubscribeToPlayerEvents(blue);
             GamePlatform = new GamePlatform(new CpuPlayer(new State(), PlayerName.Red), blue);
@@ -221,47 +217,90 @@ namespace Quarto
             player.LoseEvent    += InformAboutLose;
             player.TieEvent     += InformAboutTie;
         }
+
+        private void _DisplayStartThinking() 
+        {
+            this.IsEnabled = false;
+            OpponentThinkingLabel.Visibility = Visibility.Visible;
+            OpponentThinkingProgressBar.Visibility = Visibility.Visible;
+        }
+
+        private void _DisplayStopThinking()
+        {
+            this.IsEnabled = true;
+            OpponentThinkingLabel.Visibility = Visibility.Hidden;
+            OpponentThinkingProgressBar.Visibility = Visibility.Hidden;
+        }
+
+        private delegate void VoidDelegate();
         public void OfferPlayerATie(HumanPlayer player)
         {
-            ActivePlayer = player;
-            TieAnswer tieAnswer = (MessageBox.Show(
-                string.Format("{0} player was offered a tie! Does he accept it?", player.Name.ToString()),
-                "Tie Offer",
-                MessageBoxButton.YesNo) == MessageBoxResult.Yes) ? TieAnswer.ACCEPT : TieAnswer.DECLINE;
-            player.TieAnswerMoveMade(tieAnswer);
+            VoidDelegate method = () =>
+            {
+                ActivePlayer = player;
+                TieAnswer tieAnswer = (MessageBox.Show(
+                    string.Format("{0} player was offered a tie! Does he accept it?", player.Name.ToString()),
+                    "Tie Offer",
+                    MessageBoxButton.YesNo) == MessageBoxResult.Yes) ? TieAnswer.ACCEPT : TieAnswer.DECLINE;
+                player.TieAnswerMoveMade(tieAnswer);
+            };
+            Dispatcher.Invoke(method);            
         }
+
         public void PrepareForFigureTakeMove(HumanPlayer player)
         {
-            ActivePlayer = player;
-            MovePhase = MovePhase.TAKE;
+            VoidDelegate method = () =>
+            {
+                ActivePlayer = player;
+                MovePhase = MovePhase.TAKE;
+            };
+            Dispatcher.Invoke(method);
         }
         public void PrepareForFigurePlaceMove(HumanPlayer player)
         {
-            ActivePlayer = player;
-            MovePhase = MovePhase.PLACE;
+            VoidDelegate method = () =>
+            {
+                ActivePlayer = player;
+                MovePhase = MovePhase.PLACE;
+            };
+            Dispatcher.Invoke(method);
         }
+
+        private delegate void TakeFigureParallelDelegate(byte f);
         public void TakeFigure(MoveMadeEventArgs<FigureTakeMove> moveArgs)
         {
             var move = moveArgs.MadeMove;
             if (gameType == GameType.PvP)
                 return;
-            Border figureToTakeBorder = _figuresToTakeBorders[move.FigureGivenToOpponent];
-            Border figureToPlaceBorder = (Border)FindName("FigureToPlaceBorder");
-            FigureWrapper figureWrapper = (FigureWrapper)figureToTakeBorder.Child;
-            figureToTakeBorder.Child = null;
-            figureToPlaceBorder.Child = figureWrapper;
+            TakeFigureParallelDelegate method = (byte f) =>
+            {
+                _DisplayStopThinking();
+                Border figureToTakeBorder = _figuresToTakeBorders[move.FigureGivenToOpponent];
+                FigureWrapper figureWrapper = (FigureWrapper)figureToTakeBorder.Child;
+                figureToTakeBorder.Child = null;
+                FigureToPlaceBorder.Child = figureWrapper;
+            };
+            Dispatcher.Invoke(method, move.FigureGivenToOpponent);
         }
+
+        private delegate void PlaceFigureParallelDelegate(byte x, byte y);
         public void PlaceFigure(MoveMadeEventArgs<FigurePlaceMove> moveArgs)
         {
             var move = moveArgs.MadeMove;
             if (gameType == GameType.PvP)
                 return;
-            Border placeFigureBorder = _gameFieldBorders[move.XFigurePlacedTo * 4 + move.YFigurePlacedTo];
-            Border takeFigureBorder = (Border)FindName("FigureToPlaceBorder");
-            FigureWrapper figureWrapper = (FigureWrapper)takeFigureBorder.Child;
-            takeFigureBorder.Child = null;
-            placeFigureBorder.Child = figureWrapper;
+            PlaceFigureParallelDelegate method = (byte x, byte y) =>
+            { 
+                _DisplayStopThinking();
+                Border placeFigureBorder = _gameFieldBorders[x * 4 + y];
+                Border takeFigureBorder = (Border)FindName("FigureToPlaceBorder");
+                FigureWrapper figureWrapper = (FigureWrapper)takeFigureBorder.Child;
+                takeFigureBorder.Child = null;
+                placeFigureBorder.Child = figureWrapper;
+            };
+            Dispatcher.Invoke(method, move.XFigurePlacedTo, move.YFigurePlacedTo);
         }
+
         public void DisplayTieAnswer(MoveMadeEventArgs<TieAnswerMove> moveArgs)
         {
             var move = moveArgs.MadeMove;
@@ -345,29 +384,23 @@ namespace Quarto
             figureToTakeBorder.Cursor = Cursors.Arrow;
             figureToTakeBorder.BorderBrush = new SolidColorBrush(Color.FromArgb(0x00, 0xEE, 0xEE, 0xEE));
 
-            //Thread t = new Thread(abc);
-            //List<object> paramL = new List<object>();
-            //paramL.Add(ActivePlayer);
-            //paramL.Add(figureWrapper.Figure);
-            //t.Start(paramL);
-
-            (ActivePlayer as HumanPlayer).FigureTakeMoveMade(figureWrapper.Figure);
+            if (gameType != GameType.PvP)
+            {
+                StartThinking((HumanPlayer)ActivePlayer,figureWrapper.Figure);
+            }
+            else 
+                ((HumanPlayer)ActivePlayer).FigureTakeMoveMade(figureWrapper.Figure);
         }
 
-        public static void abc(object param) {
-            if (!(param is List<object>))
-                throw new ArgumentException("Invalid parameter");
-            List<object> paramL = param as List<object>;
-            if(paramL.Count != 2)
-                throw new ArgumentException("Invalid parameter");
-            if(!(paramL[0] is HumanPlayer) || !(paramL[1] is byte))
-                throw new ArgumentException("Invalid parameter");
-
-            HumanPlayer player = paramL[0] as HumanPlayer;
-            byte figure = (byte)paramL[1];
-
-            player.FigureTakeMoveMade(figure);
+        public void StartThinking(HumanPlayer player, byte figure)
+        {
+            _DisplayStartThinking();
+            Task t = new Task(new System.Action(() => { 
+                player.FigureTakeMoveMade(figure); 
+            }), TaskCreationOptions.AttachedToParent);
+            t.Start();
         }
+
         /// <summary>
         /// Event handler is utilized when MovePhase == TAKE
         /// </summary>
@@ -394,52 +427,67 @@ namespace Quarto
         private bool informedAboutTie;
         public void InformAboutTie(byte line, byte sign, string message)
         {
-            if (gameType == GameType.PvP)
+            VoidDelegate method = () =>
             {
-                if (informedAboutTie)
+                if (gameType == GameType.PvP)
                 {
-                    informedAboutTie = false;
-                    return;
+                    if (informedAboutTie)
+                    {
+                        informedAboutTie = false;
+                        return;
+                    }
+                    informedAboutTie = true;
                 }
-                informedAboutTie = true;
-            }
-            OfferToPlayAgain("Tie!");
+                OfferToPlayAgain("Tie!");
+            };
+            Dispatcher.Invoke(method);
         }
         public void InformAboutWin(byte line, byte sign, string message )
         {
-            HighLightTheLine(line);
-            OfferToPlayAgain(message);
+            VoidDelegate method = () =>
+            {
+                HighLightTheLine(line);
+                OfferToPlayAgain(message);
+            };
+            Dispatcher.Invoke(method);
         }
         public void InformAboutLose(byte line, byte sign, string message)
         {
-            if (GameType.PvP == gameType)
-                return;
-            HighLightTheLine(line);
-            OfferToPlayAgain(message);
+            VoidDelegate method = () =>
+            {
+                if (GameType.PvP == gameType)
+                    return;
+                HighLightTheLine(line);
+                OfferToPlayAgain(message);
+            };
+            Dispatcher.Invoke(method);
         }
         private void OfferToPlayAgain(string message)
         {
-            MessageBoxResult result = MessageBox.Show(
-                message + "\nDo you want to play again?",
-                "Game Over",
-                MessageBoxButton.YesNo);
-            if (result == MessageBoxResult.Yes)
+            VoidDelegate method = () =>
             {
-                Restart();
-            }
-            else
-            {
-                Close();
-            }
+                MessageBoxResult result = MessageBox.Show(
+                    message + "\nDo you want to play again?",
+                    "Game Over",
+                    MessageBoxButton.YesNo);
+                if (result == MessageBoxResult.Yes)
+                {
+                    Restart();
+                }
+                else
+                {
+                    Close();
+                }
+            };
+            Dispatcher.Invoke(method);
         }
 
         private void HighLightTheLine(byte line) {
-            Grid gameFieldGrid = (Grid)FindName("GameFieldGrid");
             if (line < 4)
                 for (int j = 0; j < 4; j++)
                     for (int b = 0; b < NF; b++)
                     {
-                        Border temp = (Border)gameFieldGrid.Children[b];
+                        Border temp = (Border)GameFieldGrid.Children[b];
                         int x = Grid.GetRow(temp);
                         int y = Grid.GetColumn(temp);
                         if (x == line && j == y)
@@ -452,7 +500,7 @@ namespace Quarto
                 for (int i = 0; i < 4; i++)
                     for (int b = 0; b < NF; b++)
                     {
-                        Border temp = (Border)gameFieldGrid.Children[b];
+                        Border temp = (Border)GameFieldGrid.Children[b];
                         int x = Grid.GetRow(temp);
                         int y = Grid.GetColumn(temp);
                         if (x == i && y == line - 4)
@@ -466,7 +514,7 @@ namespace Quarto
                 for(int i = 0; i < 4; i++)
                     for (int b = 0; b < NF; b++)
                     {
-                        Border temp = (Border)gameFieldGrid.Children[b];
+                        Border temp = (Border)GameFieldGrid.Children[b];
                         int x = Grid.GetRow(temp);
                         int y = Grid.GetColumn(temp);
                         if (x == i && y == i)
@@ -480,7 +528,7 @@ namespace Quarto
                 for (int i = 0, j = 3; i < 4; i++, j--)
                     for (int b = 0; b < NF; b++)
                     {
-                        Border temp = (Border)gameFieldGrid.Children[b];
+                        Border temp = (Border)GameFieldGrid.Children[b];
                         int x = Grid.GetRow(temp);
                         int y = Grid.GetColumn(temp);
                         if (x == i && y == j)

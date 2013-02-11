@@ -1,8 +1,17 @@
 ﻿<Window x:Class="Quarto.AboutWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="About" Height="91" Width="300" FontFamily="Lao UI" ResizeMode="NoResize" ShowInTaskbar="False">
+        Title="About" Height="105" Width="300" FontFamily="Lao UI" ResizeMode="NoResize" ShowInTaskbar="False">
     <Grid>
-        <TextBlock Height="52" HorizontalAlignment="Left" Name="AboutTextBlock" VerticalAlignment="Top" Width="278" TextWrapping="Wrap" />
+        <RichTextBox Name="AboutTextBlock">
+            <FlowDocument>
+                <Paragraph>
+                    <Run>Quarto game. Version 0.0.0.2</Run>
+                </Paragraph>
+                <Paragraph>
+                    <Run>Created by VanVector (vanvector@gmail.com)</Run>
+                </Paragraph>
+            </FlowDocument>
+        </RichTextBox>
     </Grid>
 </Window>

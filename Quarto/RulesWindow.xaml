@@ -1,12 +1,38 @@
 ﻿<Window x:Class="Quarto.RulesWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Rules" Height="135" Width="221" ResizeMode="NoResize" ShowInTaskbar="False">
-    <Grid Height="93" Width="190">
-        <TextBlock Margin="0,0,91,76">           
-            <Hyperlink NavigateUri="http://en.wikipedia.org/wiki/Quarto_(board_game)" RequestNavigate="Hyperlink_RequestNavigate" >
-                Rules on wikipedia.
-            </Hyperlink>
-        </TextBlock>
+        Title="Rules" Height="347" Width="499" ResizeMode="NoResize" ShowInTaskbar="False" FontFamily="Lao UI">
+    <Grid>
+        <RichTextBox IsDocumentEnabled="True" IsReadOnly="True" >
+            <FlowDocument TextAlignment="Justify">
+                <Paragraph TextAlignment="Center" FontWeight="Bold">Game "Quarto"</Paragraph>
+                <Paragraph TextIndent="20">
+                    The rules are quite simple. There are a 4x4 field and 16 
+                    pieces. There are 4 attributes each piece has. They are height, solidness, 
+                    shape and color. Each attribute can be one of two kinds (solid/hollow, 
+                    big/small, black/white, square/round). The game objective 
+                    is to form a line of 4 pieces with at least one common attribute. 
+                    The line can be horizontal, vertical or diagonal.
+                </Paragraph>
+                <Paragraph TextIndent="20">
+                    The first player chooses a piece for the second player. The 
+                    second player places the piece on a free game board place and 
+                    chooses a piece for the first player to place. And so on. The game
+                    ends when one of the players finishes a winning line and says 
+                    "Quarto". Though a player may not notice the winning line but
+                    choose a piece and finish his turn. In such a case at that very 
+                    moment his opponent may say "Quarto" having noticed the line and win.
+                    In the other case this line is not considered as winning line and the 
+                    game continues. When there is no winning lines saying "Quarto" leads to
+                    a loss. If all the pieces were placed and nobody is the winner then game
+                    ends with a tie.
+                </Paragraph>
+                <Paragraph>
+                    <Hyperlink NavigateUri="http://en.wikipedia.org/wiki/Quarto_(board_game)" RequestNavigate="Hyperlink_RequestNavigate" >
+                        Rules on wikipedia.
+                    </Hyperlink>
+                </Paragraph>
+            </FlowDocument>
+        </RichTextBox>
     </Grid>
 </Window>

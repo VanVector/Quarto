@@ -21,8 +21,6 @@ namespace Quarto
         public AboutWindow()
         {
             InitializeComponent();
-            TextBlock textBlock = (TextBlock)FindName("AboutTextBlock");
-            textBlock.Text = "Quarto game. Version 0.0.0.1.\r\nCreated by Vanvector (vanvector@gmail.com).";
         }
     }
 }
