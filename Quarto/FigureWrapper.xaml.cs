@@ -12,6 +12,9 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
+using System.IO;
+using System.Reflection;
+
 using QuartoLib;
 
 namespace Quarto
@@ -69,10 +72,19 @@ namespace Quarto
             e3.Fill = new SolidColorBrush(((figure & 4) == 0) ? Color.FromArgb(255, 0x44, 0x44, 0x44) : Color.FromArgb(255, 255, 255, 255));
             e4.Fill = new SolidColorBrush(((figure & 8) == 0) ? Color.FromArgb(255, 0x44, 0x44, 0x44) : Color.FromArgb(255, 255, 255, 255));
 
-            this.Background = new ImageBrush
+            using (Stream _stream = Assembly.GetExecutingAssembly().GetManifestResourceStream("Quarto.Images.figure" + figure + ".png"))
             {
-                ImageSource = new BitmapImage(new Uri(@"figures\figure" + figure + ".png", UriKind.Relative))
-            };
+                BitmapImage bi = new BitmapImage();
+                bi.BeginInit();
+                bi.StreamSource = _stream;
+                bi.CacheOption = BitmapCacheOption.OnLoad;
+                bi.EndInit();
+                bi.Freeze();
+                this.Background = new ImageBrush
+                {
+                    ImageSource = bi
+                };
+            }
             SwitchToPieceView();
         }
 
