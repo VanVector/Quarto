@@ -105,5 +105,7 @@
         <Button Content="Surrender" HorizontalAlignment="Left" Margin="161,295,0,174" Name="SurrenderButton" Width="100" FontSize="13" Grid.Column="1" Click="SurrenderButton_Click" />
         <ProgressBar Grid.Column="1" Height="28" HorizontalAlignment="Left" Margin="43,353,0,0" Name="OpponentThinkingProgressBar" VerticalAlignment="Top" Width="218" IsIndeterminate="True" Visibility="Hidden" />
         <Label Content="The opponent is thinking..." Grid.Column="1" Height="28" HorizontalAlignment="Right" Margin="0,353,75,0" Name="OpponentThinkingLabel" VerticalAlignment="Top" Visibility="Hidden" />
+        <Label Content="Привет, брат!" Grid.Column="1" Height="29" HorizontalAlignment="Left" Margin="43,37,0,0" Name="label1" VerticalAlignment="Top" Width="119" FontStyle="Italic" FontSize="14" FontFamily="Segoe UI" />
+        <Label Content="Сделал с твоей помощью :)" Grid.Column="1" Height="28" HorizontalAlignment="Left" Margin="43,72,0,0" Name="label2" VerticalAlignment="Top" FontStyle="Italic" FontSize="14" />
     </Grid>
 </Window>

@@ -173,9 +173,6 @@ namespace QuartoLib
 
         protected sbyte dfs_takeMove(ExtendedState s, int depth)
         {
-            if (s.FiguresPlaced == 16)
-                return 0; // all figures placed
-
             if (_gameStates.ContainsKey(s.CodedState))
                 return _gameStates[s.CodedState];
 
@@ -184,6 +181,9 @@ namespace QuartoLib
                 _gameStates.Add(s.CodedState, 1);
                 return 1;
             }
+
+            if (s.FiguresPlaced == 16)
+                return 0; // all figures placed
 
             if (depth == 0)
             {
@@ -356,7 +356,7 @@ namespace QuartoLib
 
             if (CurrentState.FigureToPlace == Figure.NO_FIGURE)
             {
-                if (dfs_takeMove(new ExtendedState(CurrentState), _GetIterationDepth(CurrentState)) == 1)
+                if (CurrentState.FiguresPlaced == 16 || dfs_takeMove(new ExtendedState(CurrentState), _GetIterationDepth(CurrentState)) == 1)
                 {
                     // accept the tie
                     TieAnswerMoveMadeEvent(new MoveMadeEventArgs<TieAnswerMove>(new TieAnswerMove(TieAnswer.ACCEPT)));
@@ -416,8 +416,8 @@ namespace QuartoLib
         /// using dfs. This values should reflect suitable number of states and
         /// move taking time.
         /// </summary>
-        private int[] _iterationDepth = new int[32] { 0, 0, 0, 0, 0, 0, 1, 6, 7, 7, 7, 8, 8, 9, 9, 12, 
-            14, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16};
+        private int[] _iterationDepth = new int[33] { 0, 0, 0, 0, 0, 0, 1, 6, 7, 7, 7, 8, 8, 9, 9, 12, 
+            14, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16};
         private int _GetIterationDepth(State s) {
             int n = s.FiguresPlaced * 2 + ((s.FigureToPlace == Figure.NO_FIGURE)? 0: 1);
             return _iterationDepth[n];
