@@ -1,7 +1,7 @@
 ﻿<Window x:Class="Quarto.AboutWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="About" Height="105" Width="300" FontFamily="Lao UI" ResizeMode="NoResize" ShowInTaskbar="False" Icon="/Quarto;component/Images/Qr_logo.ico">
+        Title="About" Height="117" Width="300" FontFamily="Lao UI" ResizeMode="NoResize" ShowInTaskbar="False" Icon="/Quarto;component/Images/Qr_logo.ico">
     <Grid>
         <RichTextBox Name="AboutTextBlock">
             <FlowDocument>
@@ -9,7 +9,7 @@
                     <Run>Quarto game. Version 0.0.0.2</Run>
                 </Paragraph>
                 <Paragraph>
-                    <Run>Created by VanVector (vanvector@gmail.com)</Run>
+                    <Run>Created by Ivan Gritsenko (vanvector@gmail.com)</Run>
                 </Paragraph>
             </FlowDocument>
         </RichTextBox>
