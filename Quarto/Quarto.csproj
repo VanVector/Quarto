@@ -30,7 +30,7 @@
     <ProductName>Quarto</ProductName>
     <PublisherName>Ivan Gritsenko</PublisherName>
     <OpenBrowserOnPublish>false</OpenBrowserOnPublish>
-    <ApplicationRevision>4</ApplicationRevision>
+    <ApplicationRevision>7</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <CreateDesktopShortcut>true</CreateDesktopShortcut>
@@ -60,10 +60,10 @@
     <ApplicationIcon>Images\Qr_logo.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestCertificateThumbprint>660F6DDD24457F3BAE9D6DFBB3D31CDCC8BAF8A5</ManifestCertificateThumbprint>
+    <ManifestCertificateThumbprint>CA36F14C93478C1DE8D6C631BDACDA7A5BDED1CF</ManifestCertificateThumbprint>
   </PropertyGroup>
   <PropertyGroup>
-    <ManifestKeyFile>Quarto_TemporaryKey.pfx</ManifestKeyFile>
+    <ManifestKeyFile>Quarto_1_TemporaryKey.pfx</ManifestKeyFile>
   </PropertyGroup>
   <PropertyGroup>
     <GenerateManifests>true</GenerateManifests>
@@ -76,6 +76,9 @@
   </PropertyGroup>
   <PropertyGroup>
     <SignManifests>true</SignManifests>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>true</SignAssembly>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -171,6 +174,7 @@
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
     </None>
     <AppDesigner Include="Properties\" />
+    <None Include="Quarto_1_TemporaryKey.pfx" />
     <None Include="Quarto_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>

@@ -6,14 +6,15 @@ using QuartoLib.Cpu;
 
 namespace QuartoLib
 {
-    public class CpuPlayer: IPlayer
+    public class CpuPlayer : IPlayer
     {
 
         /// <summary>
         /// Player color or name
         /// </summary>
         private PlayerName _name;
-        public PlayerName Name {
+        public PlayerName Name
+        {
             get { return _name; }
             private set { _name = value; }
         }
@@ -22,7 +23,8 @@ namespace QuartoLib
         ///  State given to the player
         /// </summary>
         private State _currentState;
-        public State CurrentState {
+        public State CurrentState
+        {
             get { return _currentState; }
             private set { _currentState = value; }
         }
@@ -35,7 +37,8 @@ namespace QuartoLib
         /// <summary>
         /// Initialize Cpu player with current state and name.
         /// </summary>
-        public CpuPlayer(State state, PlayerName name) {
+        public CpuPlayer(State state, PlayerName name)
+        {
             _acceptTie = false;
             CurrentState = state;
             Name = name;
@@ -57,8 +60,9 @@ namespace QuartoLib
         /// <summary>
         /// Defines if current state assumes this cpuPlayer take move
         /// </summary>
-        private bool _IsMyTurn(State s) { 
-            int n = s.FiguresPlaced * 2 + ((s.FigureToPlace == Figure.NO_FIGURE)? 0: 1);
+        private bool _IsMyTurn(State s)
+        {
+            int n = s.FiguresPlaced * 2 + ((s.FigureToPlace == Figure.NO_FIGURE) ? 0 : 1);
             if (Name == PlayerName.Red)
                 if ((((n + 1) / 2) & 1) == 0)
                     return true;
@@ -68,17 +72,19 @@ namespace QuartoLib
             return false;
         }
 
-        private static bool _StateIsWinningBySayingQuarto(State s) {
+        private static bool _StateIsWinningBySayingQuarto(State s)
+        {
             if (s.LastFigurePlaced == Figure.NO_FIGURE)
                 return false;
             // find last figure placed
             int x = -1; int y = -1; int i; int j;
             bool found = false;
-            for(i = 0; i < 4 && !found; i++)
-                for(j = 0; j < 4 && !found; j++)
-                    if(s.LastFigurePlaced == s.GameField[i][j]) {
+            for (i = 0; i < 4 && !found; i++)
+                for (j = 0; j < 4 && !found; j++)
+                    if (s.LastFigurePlaced == s.GameField[i][j])
+                    {
                         found = true;
-                        x = i; 
+                        x = i;
                         y = j;
                         break;
                     }
@@ -149,7 +155,7 @@ namespace QuartoLib
                     if (s.GameField[i][j] == Figure.NO_FIGURE)
                     {
                         FigurePlaceMove tmove = new FigurePlaceMove(i, j); // current move
-                        sbyte tprice = dfs_takeMove(new ExtendedState(s, tmove), depth-1);
+                        sbyte tprice = dfs_takeMove(new ExtendedState(s, tmove), depth - 1);
                         if (tprice == 1)
                         {
                             return 1;
@@ -197,7 +203,7 @@ namespace QuartoLib
                 if (((s.Figures >> f) & 1) == 0)
                 {
                     FigureTakeMove tmove = new FigureTakeMove(f); // current move
-                    sbyte tprice = dfs_placeMove(new ExtendedState(s, tmove), depth-1);
+                    sbyte tprice = dfs_placeMove(new ExtendedState(s, tmove), depth - 1);
                     if (tprice == -1)
                     {
                         _gameStates.Add(s.CodedState, 1);
@@ -223,7 +229,8 @@ namespace QuartoLib
             }
         }
 
-        public void MakeFigureTakeMove() {
+        public void MakeFigureTakeMove()
+        {
             if (_StateIsWinningBySayingQuarto(CurrentState))
             {
                 // say "Quarto"
@@ -231,13 +238,14 @@ namespace QuartoLib
                 return;
             }
 
-            if (CurrentState.FiguresPlaced == 16) {
+            if (CurrentState.FiguresPlaced == 16)
+            {
                 // offer a tie
                 TieOfferMoveMadeEvent(new MoveMadeEventArgs<TieOfferMove>(new TieOfferMove()));
                 return;
             }
 
-            ExtendedState extendedCurrentState = new ExtendedState( CurrentState );
+            ExtendedState extendedCurrentState = new ExtendedState(CurrentState);
             int iterationDepth = _GetIterationDepth(CurrentState);
             Random r = new Random((int)DateTime.Now.Ticks & 0x0000FFFF);
             FigureTakeMove anyTieMove = null;
@@ -250,9 +258,9 @@ namespace QuartoLib
             for (f = 0; f < 16; f++)
                 if (((CurrentState.Figures >> f) & 1) == 0)
                 {
-                    
+
                     FigureTakeMove tmove = new FigureTakeMove(f); // temp possible move
-                    sbyte tprice = dfs_placeMove(new ExtendedState( extendedCurrentState, tmove),iterationDepth);
+                    sbyte tprice = dfs_placeMove(new ExtendedState(extendedCurrentState, tmove), iterationDepth);
 
                     if (tprice == -1)
                     {
@@ -264,7 +272,8 @@ namespace QuartoLib
                         nTieMoves++;
                         if (r.Next(nTieMoves) == nTieMoves - 1) anyTieMove = tmove;
                     }
-                    else {
+                    else
+                    {
                         nLoseMoves++;
                         if (anyLoseMove == null)
                             anyLoseMove = tmove;
@@ -272,9 +281,9 @@ namespace QuartoLib
                         {
                             bool tmoveIsStupid = _IsStupidTakeMove(tmove);
                             bool anyLoseMoveIsStupid = _IsStupidTakeMove(anyLoseMove);
-                            if(tmoveIsStupid && anyLoseMoveIsStupid || !tmoveIsStupid && !anyLoseMoveIsStupid)
-                                anyLoseMove = (r.Next(nLoseMoves) == nLoseMoves - 1)? tmove : anyLoseMove;
-                            else if(!tmoveIsStupid && anyLoseMoveIsStupid)
+                            if (tmoveIsStupid && anyLoseMoveIsStupid || !tmoveIsStupid && !anyLoseMoveIsStupid)
+                                anyLoseMove = (r.Next(nLoseMoves) == nLoseMoves - 1) ? tmove : anyLoseMove;
+                            else if (!tmoveIsStupid && anyLoseMoveIsStupid)
                                 anyLoseMove = tmove;
                         }
                     }
@@ -287,11 +296,12 @@ namespace QuartoLib
             FigureTakeMoveMadeEvent(new MoveMadeEventArgs<FigureTakeMove>(move));
         }
 
-        public bool _IsStupidTakeMove(FigureTakeMove ftm) {
+        public bool _IsStupidTakeMove(FigureTakeMove ftm)
+        {
 
             State s = new State(CurrentState, ftm);
-            for(int i = 0; i < 4; i++)
-                for(int j = 0; j < 4; j++)
+            for (int i = 0; i < 4; i++)
+                for (int j = 0; j < 4; j++)
                     if (s.GameField[i][j] == Figure.NO_FIGURE)
                     {
                         State ts = new State(s, new FigurePlaceMove((byte)i, (byte)j));
@@ -302,7 +312,8 @@ namespace QuartoLib
         }
 
         public event MoveMadeEventHandler<FigureTakeMove> FigureTakeMoveMadeEvent;
-        public void MakeFigurePlaceMove() {
+        public void MakeFigurePlaceMove()
+        {
             if (_StateIsWinningBySayingQuarto(CurrentState))
             {
                 // say "Quarto"
@@ -311,7 +322,7 @@ namespace QuartoLib
             }
 
             //_gameStates = new ExtendedDictionary();
-            ExtendedState extendedCurrentState = new ExtendedState( CurrentState );
+            ExtendedState extendedCurrentState = new ExtendedState(CurrentState);
             int iterationDepth = _GetIterationDepth(CurrentState);
             Random r = new Random((int)DateTime.Now.Ticks & 0x0000FFFF);
             FigurePlaceMove anyTieMove = null;
@@ -325,7 +336,7 @@ namespace QuartoLib
                 for (j = 0; j < 4; j++)
                     if (CurrentState.GameField[i][j] == Figure.NO_FIGURE)
                     {
-                        
+
                         FigurePlaceMove tmove = new FigurePlaceMove(i, j); // temp possible move
                         sbyte tprice = dfs_takeMove(new ExtendedState(extendedCurrentState, tmove), iterationDepth);
 
@@ -383,25 +394,31 @@ namespace QuartoLib
 
         public void InformAboutMove(Move opponentMove)
         {
-            if (opponentMove is FigurePlaceMove) {
+            if (opponentMove is FigurePlaceMove)
+            {
                 CurrentState = new State(CurrentState, (FigurePlaceMove)opponentMove);
             }
-            else if (opponentMove is FigureTakeMove) {
+            else if (opponentMove is FigureTakeMove)
+            {
                 CurrentState = new State(CurrentState, (FigureTakeMove)opponentMove);
             }
-            else if (opponentMove is TieAnswerMove) {
+            else if (opponentMove is TieAnswerMove)
+            {
                 if (((TieAnswerMove)opponentMove).TieAnswer == TieAnswer.ACCEPT)
                     ;// nice to play with you;
                 else
                     ;// waste of your time
             }
-            else if (opponentMove is TieOfferMove) {
+            else if (opponentMove is TieOfferMove)
+            {
                 // I will think about it
             }
-            else if (opponentMove is SurrenderMove) { 
+            else if (opponentMove is SurrenderMove)
+            {
                 // haha I won!
             }
-            else if (opponentMove is QuartoSayingMove) { 
+            else if (opponentMove is QuartoSayingMove)
+            {
                 // lets see who is the winner
             }
         }
@@ -416,10 +433,11 @@ namespace QuartoLib
         /// using dfs. This values should reflect suitable number of states and
         /// move taking time.
         /// </summary>
-        private int[] _iterationDepth = new int[33] { 0, 0, 0, 0, 0, 0, 1, 6, 7, 7, 7, 8, 8, 9, 9, 12, 
+        private int[] _iterationDepth = new int[33] { 0, 0, 0, 0, 0, 0, 1, 5, 5, 5, 7, 8, 8, 8, 8, 12, 
             14, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16, 16};
-        private int _GetIterationDepth(State s) {
-            int n = s.FiguresPlaced * 2 + ((s.FigureToPlace == Figure.NO_FIGURE)? 0: 1);
+        private int _GetIterationDepth(State s)
+        {
+            int n = s.FiguresPlaced * 2 + ((s.FigureToPlace == Figure.NO_FIGURE) ? 0 : 1);
             return _iterationDepth[n];
         }
     }

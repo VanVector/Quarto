@@ -18,7 +18,8 @@ using System.Threading.Tasks;
 
 namespace Quarto
 {
-    public enum GameType { 
+    public enum GameType
+    {
         PvP = 0,
         PvC = 1,
         CvP = 2
@@ -36,16 +37,19 @@ namespace Quarto
 
         Brush ActivePlayerBrush;
         public IPlayer _activePlayer;
-        public IPlayer ActivePlayer {
+        public IPlayer ActivePlayer
+        {
             get { return _activePlayer; }
-            set {
+            set
+            {
                 ActivePlayerChanging();
                 _activePlayer = value;
                 ActivePlayerChanged(value);
             }
         }
         protected void ActivePlayerChanging() { }
-        protected void ActivePlayerChanged(IPlayer player) {
+        protected void ActivePlayerChanged(IPlayer player)
+        {
             ActivePlayerBrush = (player.Name == PlayerName.Red) ?
                     new SolidColorBrush(Color.FromRgb(0xCC, 0x55, 0x55)) :
                     new SolidColorBrush(Color.FromRgb(0x55, 0x55, 0xCC));
@@ -53,7 +57,8 @@ namespace Quarto
         }
 
         private MovePhase _movePhase;
-        public MovePhase MovePhase {
+        public MovePhase MovePhase
+        {
             get { return _movePhase; }
             set { _movePhase = value; }
         }
@@ -62,9 +67,11 @@ namespace Quarto
         /// Current Player
         /// </summary>
         private PlayerTurn _playerTurn;
-        public PlayerTurn PlayerTurn {
+        public PlayerTurn PlayerTurn
+        {
             get { return _playerTurn; }
-            set {
+            set
+            {
                 _playerTurn = value;
             }
         }
@@ -77,7 +84,8 @@ namespace Quarto
             Restart();
         }
 
-        private void CreateNewGame() {
+        private void CreateNewGame()
+        {
             InitializeGameField();
             InitializeFiguresToTakeField();
             InitializeFigures();
@@ -85,9 +93,10 @@ namespace Quarto
             PlayerTurn = PlayerTurn.RED;
             MovePhase = MovePhase.TAKE;
         }
-        
+
         private Border[] _gameFieldBorders = new Border[16];
-        private void InitializeGameField() {
+        private void InitializeGameField()
+        {
             int i = 0;
             foreach (Border circleBorder in GameFieldGrid.Children)
             {
@@ -155,7 +164,8 @@ namespace Quarto
                     k++;
                 }
         }
-        private void InitializeControls() {
+        private void InitializeControls()
+        {
             Border takeFigureBorder = (Border)FindName("FigureToPlaceBorder");
             takeFigureBorder.Child = null;
         }
@@ -181,7 +191,7 @@ namespace Quarto
             HumanPlayer blue = new HumanPlayer(PlayerName.Blue);
             SubscribeToPlayerEvents(red);
             SubscribeToPlayerEvents(blue);
-            GamePlatform = new GamePlatform( red, blue);
+            GamePlatform = new GamePlatform(red, blue);
             GamePlatform.StartGame();
         }
         private void StartPvC()
@@ -201,24 +211,25 @@ namespace Quarto
             GamePlatform.StartGame();
         }
 
-        private void SubscribeToPlayerEvents(HumanPlayer player) { 
-            player.OrderedToMakeFigureTakeMoveEvent     += PrepareForFigureTakeMove;
-            player.OrderedToMakeFigurePlaceMoveEvent    += PrepareForFigurePlaceMove;
-            player.OrderedToMakeTieAnswerMoveEvent      += OfferPlayerATie;
+        private void SubscribeToPlayerEvents(HumanPlayer player)
+        {
+            player.OrderedToMakeFigureTakeMoveEvent += PrepareForFigureTakeMove;
+            player.OrderedToMakeFigurePlaceMoveEvent += PrepareForFigurePlaceMove;
+            player.OrderedToMakeTieAnswerMoveEvent += OfferPlayerATie;
 
-            player.OpponentFigureTakeMoveMadeEvent      += TakeFigure;
-            player.OpponentFigurePlaceMoveMadeEvent     += PlaceFigure;
-            player.OpponentTieAnswerMoveMadeEvent       += DisplayTieAnswer;
+            player.OpponentFigureTakeMoveMadeEvent += TakeFigure;
+            player.OpponentFigurePlaceMoveMadeEvent += PlaceFigure;
+            player.OpponentTieAnswerMoveMadeEvent += DisplayTieAnswer;
             //player.OpponentTieOfferMoveMadeEvent += ;
             //player.OpponentSurrenderMoveMadeEvent += ;
             //player.OpponentQuartoSayingMoveMadeEvent += ;
 
-            player.WinEvent     += InformAboutWin;
-            player.LoseEvent    += InformAboutLose;
-            player.TieEvent     += InformAboutTie;
+            player.WinEvent += InformAboutWin;
+            player.LoseEvent += InformAboutLose;
+            player.TieEvent += InformAboutTie;
         }
 
-        private void _DisplayStartThinking() 
+        private void _DisplayStartThinking()
         {
             this.IsEnabled = false;
             OpponentThinkingLabel.Visibility = Visibility.Visible;
@@ -244,7 +255,7 @@ namespace Quarto
                     MessageBoxButton.YesNo) == MessageBoxResult.Yes) ? TieAnswer.ACCEPT : TieAnswer.DECLINE;
                 player.TieAnswerMoveMade(tieAnswer);
             };
-            Dispatcher.Invoke(method);            
+            Dispatcher.Invoke(method);
         }
 
         public void PrepareForFigureTakeMove(HumanPlayer player)
@@ -290,8 +301,8 @@ namespace Quarto
             if (gameType == GameType.PvP)
                 return;
             PlaceFigureParallelDelegate method = (byte x, byte y) =>
-            { 
-                _DisplayStopThinking();
+            {
+                //_DisplayStopThinking();
                 Border placeFigureBorder = _gameFieldBorders[x * 4 + y];
                 Border takeFigureBorder = (Border)FindName("FigureToPlaceBorder");
                 FigureWrapper figureWrapper = (FigureWrapper)takeFigureBorder.Child;
@@ -307,7 +318,7 @@ namespace Quarto
             if (gameType == GameType.PvP)
                 return;
             string message;
-            if(move.TieAnswer == TieAnswer.DECLINE)
+            if (move.TieAnswer == TieAnswer.DECLINE)
                 message = string.Format("Tie offer was declined.");
             else
                 message = string.Format("Tie offer was accepted.");
@@ -344,7 +355,8 @@ namespace Quarto
         /// <summary>
         /// Event handler is utilized when MovePhase == PLACE
         /// </summary>
-        private void CircleBorder_MouseEnter(object sender, MouseEventArgs e) {
+        private void CircleBorder_MouseEnter(object sender, MouseEventArgs e)
+        {
             if (MovePhase == MovePhase.TAKE) return;
             if (ActivePlayer is HumanPlayer == false)
                 return;
@@ -386,17 +398,18 @@ namespace Quarto
 
             if (gameType != GameType.PvP)
             {
-                StartThinking((HumanPlayer)ActivePlayer,figureWrapper.Figure);
+                StartThinking((HumanPlayer)ActivePlayer, figureWrapper.Figure);
             }
-            else 
+            else
                 ((HumanPlayer)ActivePlayer).FigureTakeMoveMade(figureWrapper.Figure);
         }
 
         public void StartThinking(HumanPlayer player, byte figure)
         {
             _DisplayStartThinking();
-            Task t = new Task(new System.Action(() => { 
-                player.FigureTakeMoveMade(figure); 
+            Task t = new Task(new System.Action(() =>
+            {
+                player.FigureTakeMoveMade(figure);
             }), TaskCreationOptions.AttachedToParent);
             t.Start();
         }
@@ -442,7 +455,7 @@ namespace Quarto
             };
             Dispatcher.Invoke(method);
         }
-        public void InformAboutWin(byte line, byte sign, string message )
+        public void InformAboutWin(byte line, byte sign, string message)
         {
             VoidDelegate method = () =>
             {
@@ -482,7 +495,8 @@ namespace Quarto
             Dispatcher.Invoke(method);
         }
 
-        private void HighLightTheLine(byte line) {
+        private void HighLightTheLine(byte line)
+        {
             if (line < 4)
                 for (int j = 0; j < 4; j++)
                     for (int b = 0; b < NF; b++)
@@ -496,7 +510,8 @@ namespace Quarto
                             break;
                         }
                     }
-            else if (line < 8) {
+            else if (line < 8)
+            {
                 for (int i = 0; i < 4; i++)
                     for (int b = 0; b < NF; b++)
                     {
@@ -510,8 +525,9 @@ namespace Quarto
                         }
                     }
             }
-            else if (line == 8) {
-                for(int i = 0; i < 4; i++)
+            else if (line == 8)
+            {
+                for (int i = 0; i < 4; i++)
                     for (int b = 0; b < NF; b++)
                     {
                         Border temp = (Border)GameFieldGrid.Children[b];
@@ -524,7 +540,8 @@ namespace Quarto
                         }
                     }
             }
-            else if (line == 9) {
+            else if (line == 9)
+            {
                 for (int i = 0, j = 3; i < 4; i++, j--)
                     for (int b = 0; b < NF; b++)
                     {
@@ -543,7 +560,7 @@ namespace Quarto
         #region ActionButtonEventHandlers
         private void SayQuartoButton_Click(object sender, RoutedEventArgs e)
         {
-            if(ActivePlayer is HumanPlayer == false)
+            if (ActivePlayer is HumanPlayer == false)
                 return;
             (ActivePlayer as HumanPlayer).QuartoSayingMoveMade();
         }
@@ -570,13 +587,14 @@ namespace Quarto
             {
                 EnableFullscreen();
             }
-            else 
+            else
             {
                 DisableFullscreen();
             }
         }
 
-        private void EnableFullscreen() {
+        private void EnableFullscreen()
+        {
             if (isInFullscreenMode)
                 return;
             isInFullscreenMode = true;
@@ -612,17 +630,18 @@ namespace Quarto
         private bool isInFullscreenMode = false;
         private void Window_KeyUp(object sender, KeyEventArgs e)
         {
-            if (e.Key == Key.Escape) {
+            if (e.Key == Key.Escape)
+            {
                 DisableFullscreen();
             }
         }
-        
+
         private void AboutMenuItem_Click(object sender, RoutedEventArgs e)
         {
             AboutWindow aboutWindow = new AboutWindow();
             aboutWindow.ShowDialog();
         }
-        
+
         private void RulesMenuItem_Click(object sender, RoutedEventArgs e)
         {
             RulesWindow rulesWindow = new RulesWindow();
