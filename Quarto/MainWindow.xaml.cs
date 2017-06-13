@@ -15,6 +15,7 @@ using System.Windows.Shapes;
 using QuartoLib;
 using System.Threading;
 using System.Threading.Tasks;
+using QuartoLib.Cpu;
 
 namespace Quarto
 {

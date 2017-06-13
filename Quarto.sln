@@ -1,11 +1,13 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual C# Express 2010
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Quarto", "Quarto\Quarto.csproj", "{69A34037-82B5-473C-B16F-478263C228F3}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuartoLib", "QuartoLib\QuartoLib.csproj", "{0CFA420F-EAE8-4A3D-84AB-A3FA4F8A054E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuartoLibTests", "QuartoLibTests\QuartoLibTests.csproj", "{BD146056-2150-47BE-AACB-8D84B649761D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuartoLib.Test", "QuartoLib.Test\QuartoLib.Test.csproj", "{C6DA59A8-C37B-4C2B-B075-DC2F1A5085BF}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -37,16 +39,18 @@ Global
 		{0CFA420F-EAE8-4A3D-84AB-A3FA4F8A054E}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{0CFA420F-EAE8-4A3D-84AB-A3FA4F8A054E}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{0CFA420F-EAE8-4A3D-84AB-A3FA4F8A054E}.Release|x86.ActiveCfg = Release|Any CPU
-		{BD146056-2150-47BE-AACB-8D84B649761D}.Debug|Any CPU.ActiveCfg = Debug|x86
-		{BD146056-2150-47BE-AACB-8D84B649761D}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
-		{BD146056-2150-47BE-AACB-8D84B649761D}.Debug|Mixed Platforms.Build.0 = Debug|x86
-		{BD146056-2150-47BE-AACB-8D84B649761D}.Debug|x86.ActiveCfg = Debug|x86
-		{BD146056-2150-47BE-AACB-8D84B649761D}.Debug|x86.Build.0 = Debug|x86
-		{BD146056-2150-47BE-AACB-8D84B649761D}.Release|Any CPU.ActiveCfg = Release|x86
-		{BD146056-2150-47BE-AACB-8D84B649761D}.Release|Mixed Platforms.ActiveCfg = Release|x86
-		{BD146056-2150-47BE-AACB-8D84B649761D}.Release|Mixed Platforms.Build.0 = Release|x86
-		{BD146056-2150-47BE-AACB-8D84B649761D}.Release|x86.ActiveCfg = Release|x86
-		{BD146056-2150-47BE-AACB-8D84B649761D}.Release|x86.Build.0 = Release|x86
+		{C6DA59A8-C37B-4C2B-B075-DC2F1A5085BF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C6DA59A8-C37B-4C2B-B075-DC2F1A5085BF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C6DA59A8-C37B-4C2B-B075-DC2F1A5085BF}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{C6DA59A8-C37B-4C2B-B075-DC2F1A5085BF}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{C6DA59A8-C37B-4C2B-B075-DC2F1A5085BF}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{C6DA59A8-C37B-4C2B-B075-DC2F1A5085BF}.Debug|x86.Build.0 = Debug|Any CPU
+		{C6DA59A8-C37B-4C2B-B075-DC2F1A5085BF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C6DA59A8-C37B-4C2B-B075-DC2F1A5085BF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C6DA59A8-C37B-4C2B-B075-DC2F1A5085BF}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{C6DA59A8-C37B-4C2B-B075-DC2F1A5085BF}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{C6DA59A8-C37B-4C2B-B075-DC2F1A5085BF}.Release|x86.ActiveCfg = Release|Any CPU
+		{C6DA59A8-C37B-4C2B-B075-DC2F1A5085BF}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

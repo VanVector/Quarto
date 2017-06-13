@@ -2,18 +2,16 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using NUnit.Framework;
-
+using Microsoft.VisualStudio.TestTools.UnitTesting;
 using QuartoLib;
+using QuartoLib.Cpu;
 
 namespace QuartoLibTests
 {
-    [TestFixture]
+    [TestClass]
     public class TestCpuPlayer
     {
-        
-
-        [Test]
+        [TestMethod]
         public void TestMakeFigureTakeMoveNotToBeStupid()
         {
             State s = new State();
@@ -43,7 +41,7 @@ namespace QuartoLibTests
             cpuPlayer.MakeFigureTakeMove();
         }
 
-        [Test]
+        [TestMethod]
         public void TestMakeTieAnswerDeclineMove()
         {
             State s = new State();
@@ -73,7 +71,7 @@ namespace QuartoLibTests
             cpuPlayer.MakeTieAnswerMove();
         }
 
-        [Test]
+        [TestMethod]
         public void TestMakeTieAnswerAcceptMove()
         {
             State s = new State();
@@ -105,7 +103,7 @@ namespace QuartoLibTests
             cpuPlayer.MakeTieAnswerMove();
         }
 
-        [Test]
+        [TestMethod]
         public void TestMakeTieAnswerAfterAllFiguresArePlaced1() {
             /// Lose state
             State s = new State();
@@ -162,7 +160,7 @@ namespace QuartoLibTests
             cpuPlayer.MakeTieAnswerMove();
         }
 
-        [Test]
+        [TestMethod]
         public void TestMakeTieAnswerAfterAllFiguresArePlaced2()
         {
             /// Tie state

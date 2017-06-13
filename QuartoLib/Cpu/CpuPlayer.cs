@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using QuartoLib.Cpu;
 
-namespace QuartoLib
+namespace QuartoLib.Cpu
 {
     public class CpuPlayer : IPlayer
     {
